@@ -43,15 +43,7 @@ export default function MenuPage() {
   const { addItem } = useCartStore()
   const { user } = useAuthStore()
 
-  const mainCategoryMap = {
-    Signature: ["Signature"],
-    Classics: ["Classics"],
-    Drinks: ["Drinks"],
-    Coffee: ["Coffee"],
-    Refreshers: ["Refreshers"],
-    Food: ["Food"],
-    Desserts: ["Desserts"],
-  }
+
 
   const fetchProducts = async () => {
     try {

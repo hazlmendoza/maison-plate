@@ -3,10 +3,15 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Playfair_Display } from "next/font/google"
-import { Coffee, Star, X } from "lucide-react"
+import { Flame, Star, X } from "lucide-react"
 import Image from "next/image"
 import { toast } from "@/hooks/use-toast"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { useCartStore } from "@/store/cartStore"
 
@@ -40,7 +45,7 @@ export default function FeaturedMenu() {
 
   const paginatedProducts = products.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    currentPage * ITEMS_PER_PAGE,
   )
 
   const fetchBestSellers = async () => {
@@ -88,37 +93,38 @@ export default function FeaturedMenu() {
 
     if (imagePath.startsWith("http")) return imagePath
 
-    const base =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+    const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
     return `${base}/images/products/${imagePath}`
   }
 
   return (
-    <section className="relative py-24 bg-gradient-to-br from-[#0c222b] via-[#0f2833] to-[#1a3441] text-white overflow-hidden">
+    // `dark` forced so this section stays the same blackened-steel room as
+    // the hero and offer section, regardless of the site-wide theme toggle.
+    <section className="dark relative py-24 bg-gradient-to-br from-background via-background to-secondary/40 text-foreground overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-10 left-10 w-32 h-32 bg-[#d4a24c]/10 rounded-full blur-2xl" />
-        <div className="absolute top-1/3 right-20 w-24 h-24 bg-[#d4a24c]/5 rounded-full blur-xl" />
-        <div className="absolute bottom-20 left-1/3 w-40 h-40 bg-[#d4a24c]/8 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 right-10 w-28 h-28 bg-[#d4a24c]/6 rounded-full blur-2xl" />
+        <div className="absolute top-10 left-10 w-32 h-32 bg-accent/10 rounded-full blur-2xl" />
+        <div className="absolute top-1/3 right-20 w-24 h-24 bg-accent/5 rounded-full blur-xl" />
+        <div className="absolute bottom-20 left-1/3 w-40 h-40 bg-accent/8 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 right-10 w-28 h-28 bg-accent/6 rounded-full blur-2xl" />
       </div>
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
-
         {/* Heading */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-20"
         >
-          <p className="text-[#d4a24c] tracking-[0.3em] uppercase text-sm mb-3">
+          <p className="text-accent tracking-[0.3em] uppercase text-sm mb-3">
             Customer Favorites
           </p>
-          <h2 className={`${playfair.className} text-4xl md:text-5xl font-bold`}>
-            Best <span className="text-[#d4a24c] italic">Sellers</span>
+          <h2
+            className={`${playfair.className} text-4xl md:text-5xl font-bold`}
+          >
+            Best <span className="text-accent italic">Sellers</span>
           </h2>
-
         </motion.div>
 
         {/* LOADING STATE */}
@@ -127,22 +133,22 @@ export default function FeaturedMenu() {
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
-                className="flex gap-5 p-5 rounded-2xl bg-white/5 border border-white/10"
+                className="flex gap-5 p-5 rounded-sm bg-foreground/5 border border-foreground/10"
               >
                 {/* image skeleton */}
-                <div className="w-24 h-24 rounded-xl bg-white/10" />
+                <div className="w-24 h-24 rounded-sm bg-foreground/10" />
 
                 {/* content skeleton */}
                 <div className="flex-1 space-y-3">
                   <div className="flex justify-between">
-                    <div className="h-4 w-1/2 bg-white/10 rounded" />
-                    <div className="h-4 w-10 bg-white/10 rounded" />
+                    <div className="h-4 w-1/2 bg-foreground/10 rounded" />
+                    <div className="h-4 w-10 bg-foreground/10 rounded" />
                   </div>
 
-                  <div className="h-3 w-full bg-white/10 rounded" />
-                  <div className="h-3 w-3/4 bg-white/10 rounded" />
+                  <div className="h-3 w-full bg-foreground/10 rounded" />
+                  <div className="h-3 w-3/4 bg-foreground/10 rounded" />
 
-                  <div className="h-5 w-24 bg-white/10 rounded-full mt-4" />
+                  <div className="h-5 w-24 bg-foreground/10 rounded-sm mt-4" />
                 </div>
               </div>
             ))}
@@ -167,8 +173,8 @@ export default function FeaturedMenu() {
                   onClick={() => handleProductClick(item)}
                 >
                   <div
-                    className="group cursor-pointer rounded-2xl bg-white/5 border border-white/10
-                            hover:border-[#d4a24c]/30 hover:bg-white/10 transition-all duration-300
+                    className="group cursor-pointer rounded-sm bg-foreground/5 border border-foreground/10
+                            hover:border-accent/30 hover:bg-foreground/10 transition-all duration-300
                             overflow-hidden"
                   >
                     <div
@@ -176,7 +182,7 @@ export default function FeaturedMenu() {
                       onClick={() => handleProductClick(item)}
                     >
                       {/* IMAGE */}
-                      <div className="relative w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden">
+                      <div className="relative w-24 h-24 flex-shrink-0 rounded-sm overflow-hidden">
                         <Image
                           src={getImageUrl(item.image)}
                           alt={item.name}
@@ -187,40 +193,40 @@ export default function FeaturedMenu() {
 
                       {/* CONTENT */}
                       <div className="flex-1 flex flex-col justify-between">
-
                         {/* TITLE */}
                         <div>
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex items-center gap-2">
-                              <h3 className={`${playfair.className} text-lg font-semibold group-hover:text-[#d4a24c] transition-colors`}>
+                              <h3
+                                className={`${playfair.className} text-lg font-semibold group-hover:text-accent transition-colors`}
+                              >
                                 {item.name}
                               </h3>
 
                               {item.best_seller === true && (
-                                <Star className="w-4 h-4 text-[#d4a24c]" />
+                                <Star className="w-4 h-4 text-accent" />
                               )}
                             </div>
 
-                            <span className="text-[#d4a24c] text-sm font-bold">
+                            <span className="text-accent text-sm font-bold">
                               ₱{item.price}
                             </span>
                           </div>
 
-                          <p className="text-sm text-white/60 mt-2 line-clamp-2">
+                          <p className="text-sm text-foreground/60 mt-2 line-clamp-2">
                             {item.description}
                           </p>
                         </div>
 
                         {/* META */}
                         <div className="flex items-center justify-between mt-4">
-                          <span className="inline-flex items-center gap-2 text-xs px-3 py-1 rounded-full bg-[#d4a24c]/10 text-[#d4a24c] border border-[#d4a24c]/20">
+                          <span className="inline-flex items-center gap-2 text-xs px-3 py-1 rounded-sm bg-accent/10 text-accent border border-accent/20">
                             {item.category}
                           </span>
                         </div>
                       </div>
                     </div>
                   </div>
-
                 </motion.div>
               ))}
             </motion.div>
@@ -230,23 +236,24 @@ export default function FeaturedMenu() {
               <div className="text-center flex items-center justify-center">
                 {products.length > ITEMS_PER_PAGE && (
                   <div className="flex items-center justify-center gap-4 mt-10">
-
                     <button
                       onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
                       disabled={currentPage === 1}
-                      className="px-4 py-2 rounded-lg bg-white/10 border border-white/10 disabled:opacity-40"
+                      className="px-4 py-2 rounded-sm bg-foreground/10 border border-foreground/10 disabled:opacity-40"
                     >
                       Prev
                     </button>
 
-                    <span className="text-sm text-white/60">
+                    <span className="text-sm text-foreground/60">
                       Page {currentPage} of {totalPages}
                     </span>
 
                     <button
-                      onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                      onClick={() =>
+                        setCurrentPage((p) => Math.min(p + 1, totalPages))
+                      }
                       disabled={currentPage === totalPages}
-                      className="px-4 py-2 rounded-lg bg-white/10 border border-white/10 disabled:opacity-40"
+                      className="px-4 py-2 rounded-sm bg-foreground/10 border border-foreground/10 disabled:opacity-40"
                     >
                       Next
                     </button>
@@ -257,8 +264,8 @@ export default function FeaturedMenu() {
               {/* CTA */}
               <div className="text-center flex items-center justify-center">
                 <button
-                  onClick={() => window.location.href = "/menu"}
-                  className="px-8 py-3 rounded-full bg-[#e5a834]/80 border border-white/20 hover:bg-[#d4a24c]/40 transition"
+                  onClick={() => (window.location.href = "/menu")}
+                  className="px-8 py-3 rounded-sm bg-accent hover:bg-accent/85 text-accent-foreground border border-accent/20 transition"
                 >
                   View Full Menu
                 </button>
@@ -270,28 +277,26 @@ export default function FeaturedMenu() {
         {/* Empty */}
         {!loading && products.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-
-            <div className="w-16 h-16 rounded-full bg-[#d4a24c]/10 flex items-center justify-center mb-6">
-              <Coffee className="w-8 h-8 text-[#d4a24c]" />
+            <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mb-6">
+              <Flame className="w-8 h-8 text-accent" />
             </div>
 
             <h3 className={`${playfair.className} text-2xl font-semibold mb-2`}>
               No Best Sellers Yet
             </h3>
 
-            <p className="text-white/60 max-w-md">
-              Our most loved items will appear here once customers start ordering.
+            <p className="text-foreground/60 max-w-md">
+              Our most loved plates will appear here once guests start ordering.
               Stay tuned for our top picks.
             </p>
 
-            <div className="mt-6 h-[1px] w-24 bg-[#d4a24c]/30" />
+            <div className="mt-6 h-[1px] w-24 bg-accent/30" />
           </div>
         )}
 
         {/* Product Detail Dialog */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="max-w-3xl p-0 overflow-hidden bg-[#0c222b] text-white border border-white/10 rounded-2xl">
-
+          <DialogContent className="max-w-3xl p-0 overflow-hidden bg-card text-foreground border border-border rounded-sm">
             {/* IMAGE HEADER */}
             <div className="relative w-full h-72">
               <Image
@@ -300,30 +305,31 @@ export default function FeaturedMenu() {
                 fill
                 className="object-contain"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0c222b] via-black/30 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-card via-background/30 to-transparent" />
             </div>
 
             {/* CONTENT */}
             <div className="p-6 space-y-5">
-
               {/* TITLE + PRICE + CATEGORY */}
               <div className="flex items-start justify-between">
-                <DialogTitle className="text-2xl font-bold text-[#d4a24c] flex justify-center items-center">
-                  <span className={`${playfair.className}`}>{selectedProduct?.name}</span>
+                <DialogTitle className="text-2xl font-bold text-accent flex justify-center items-center">
+                  <span className={`${playfair.className}`}>
+                    {selectedProduct?.name}
+                  </span>
 
                   {/* CATEGORY */}
-                  <span className="inline-flex items-center gap-2 text-sm px-3 py-1 mx-2 rounded-full bg-white/5 border border-white/10 text-white/70">
+                  <span className="inline-flex items-center gap-2 text-sm px-3 py-1 mx-2 rounded-sm bg-foreground/5 border border-border text-foreground/70">
                     {selectedProduct?.category}
                   </span>
                 </DialogTitle>
 
-                <div className="text-xl font-bold">
+                <div className="text-xl font-bold text-foreground">
                   ₱{selectedProduct?.price}
                 </div>
               </div>
 
               {/* DESCRIPTION */}
-              <p className="text-white/70 text-sm leading-relaxed">
+              <p className="text-foreground/70 text-sm leading-relaxed">
                 {selectedProduct?.description}
               </p>
 
@@ -333,15 +339,13 @@ export default function FeaturedMenu() {
                   selectedProduct && handleAddToCart(selectedProduct)
                   setDialogOpen(false)
                 }}
-                className="w-full bg-[#d4a24c] hover:bg-[#b8943a] text-black font-semibold py-3 rounded-xl"
+                className="w-full bg-accent hover:bg-accent/85 text-accent-foreground font-semibold py-3 rounded-sm"
               >
                 Add to Cart
               </Button>
             </div>
           </DialogContent>
-
         </Dialog>
-
       </div>
     </section>
   )

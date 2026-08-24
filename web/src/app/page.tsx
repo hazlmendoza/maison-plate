@@ -24,19 +24,17 @@ export default function Home() {
 
   if (loading) {
     return (
-      <LumeLoaderMinimal />
+      <div>Loading</div>
     )
   }
 
   return (
     <div className="min-h-screen">
-
       <HeroSection />
       <OfferSection />
       <FeaturedMenu />
       <BlogPreview />
       <AnnouncementsSection />
-      <TestimonialsSection />
       <CTASection />
     </div>
   )

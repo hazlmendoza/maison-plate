@@ -43,74 +43,100 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* Updated color scheme for BON GA Restaurant - forest green, cream, warm accents */
+/*
+  Maison Plate — Rustic Industrial, premium
+  Materials: blackened steel, aged copper/rust, raw limewash plaster,
+  charred oak, a single moss-green organic note.
+  Light mode = daylight plaster dining room. Dark mode = blackened-steel evening room.
+*/
 :root {
-  --radius: 0.625rem;
-  --background: oklch(0.98 0.01 85);
-  --foreground: oklch(0.15 0 0);
-  --card: oklch(0.99 0.005 85);
-  --card-foreground: oklch(0.15 0 0);
-  --popover: oklch(0.99 0.005 85);
-  --popover-foreground: oklch(0.15 0 0);
-  --primary: oklch(0.35 0.08 145);
-  --primary-foreground: oklch(0.98 0.01 85);
-  --secondary: oklch(0.92 0.02 85);
-  --secondary-foreground: oklch(0.15 0 0);
-  --muted: oklch(0.94 0.015 85);
-  --muted-foreground: oklch(0.45 0.02 85);
-  --accent: oklch(0.55 0.15 35);
-  --accent-foreground: oklch(0.98 0.01 85);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.88 0.02 85);
-  --input: oklch(0.88 0.02 85);
-  --ring: oklch(0.35 0.08 145);
-  --chart-1: oklch(0.35 0.08 145);
-  --chart-2: oklch(0.55 0.15 35);
-  --chart-3: oklch(0.45 0.12 50);
-  --chart-4: oklch(0.25 0.05 145);
-  --chart-5: oklch(0.65 0.18 40);
-  --sidebar: oklch(0.98 0.01 85);
-  --sidebar-foreground: oklch(0.15 0 0);
-  --sidebar-primary: oklch(0.35 0.08 145);
-  --sidebar-primary-foreground: oklch(0.98 0.01 85);
-  --sidebar-accent: oklch(0.92 0.02 85);
-  --sidebar-accent-foreground: oklch(0.15 0 0);
-  --sidebar-border: oklch(0.88 0.02 85);
-  --sidebar-ring: oklch(0.35 0.08 145);
+  --radius: 0.375rem; /* tighter, less "app-like" softness — industrial hardware, not rounded plastic */
+
+  --background: oklch(0.96 0.01 75);          /* warm limewash plaster */
+  --foreground: oklch(0.18 0.01 50);           /* charcoal ink */
+
+  --card: oklch(0.98 0.008 75);
+  --card-foreground: oklch(0.18 0.01 50);
+
+  --popover: oklch(0.98 0.008 75);
+  --popover-foreground: oklch(0.18 0.01 50);
+
+  --primary: oklch(0.32 0.03 40);              /* blackened steel / espresso leather */
+  --primary-foreground: oklch(0.97 0.01 75);
+
+  --secondary: oklch(0.88 0.02 60);            /* raw linen */
+  --secondary-foreground: oklch(0.18 0.01 50);
+
+  --muted: oklch(0.9 0.015 65);
+  --muted-foreground: oklch(0.42 0.02 55);
+
+  --accent: oklch(0.52 0.13 45);               /* aged copper / rust — the signature metal */
+  --accent-foreground: oklch(0.98 0.01 75);
+
+  --destructive: oklch(0.55 0.19 27);
+
+  --border: oklch(0.82 0.02 60);
+  --input: oklch(0.82 0.02 60);
+  --ring: oklch(0.52 0.13 45);
+
+  --chart-1: oklch(0.52 0.13 45);              /* copper */
+  --chart-2: oklch(0.62 0.1 75);                /* brass */
+  --chart-3: oklch(0.32 0.03 40);               /* charcoal steel */
+  --chart-4: oklch(0.45 0.08 130);              /* moss */
+  --chart-5: oklch(0.4 0.15 30);                /* rust red */
+
+  --sidebar: oklch(0.94 0.012 70);
+  --sidebar-foreground: oklch(0.18 0.01 50);
+  --sidebar-primary: oklch(0.32 0.03 40);
+  --sidebar-primary-foreground: oklch(0.97 0.01 75);
+  --sidebar-accent: oklch(0.88 0.02 60);
+  --sidebar-accent-foreground: oklch(0.18 0.01 50);
+  --sidebar-border: oklch(0.82 0.02 60);
+  --sidebar-ring: oklch(0.52 0.13 45);
 }
 
 .dark {
-  --background: oklch(0.12 0.01 145);
-  --foreground: oklch(0.95 0.01 85);
-  --card: oklch(0.15 0.01 145);
-  --card-foreground: oklch(0.95 0.01 85);
-  --popover: oklch(0.15 0.01 145);
-  --popover-foreground: oklch(0.95 0.01 85);
-  --primary: oklch(0.45 0.1 145);
-  --primary-foreground: oklch(0.98 0.01 85);
-  --secondary: oklch(0.22 0.02 145);
-  --secondary-foreground: oklch(0.95 0.01 85);
-  --muted: oklch(0.22 0.02 145);
-  --muted-foreground: oklch(0.65 0.02 85);
-  --accent: oklch(0.55 0.15 35);
-  --accent-foreground: oklch(0.98 0.01 85);
-  --destructive: oklch(0.704 0.191 22.216);
+  --background: oklch(0.12 0.01 50);           /* blackened steel */
+  --foreground: oklch(0.92 0.01 70);           /* warm bone white */
+
+  --card: oklch(0.16 0.012 50);                /* charred oak panel */
+  --card-foreground: oklch(0.92 0.01 70);
+
+  --popover: oklch(0.16 0.012 50);
+  --popover-foreground: oklch(0.92 0.01 70);
+
+  --primary: oklch(0.6 0.13 45);               /* copper, glowing against dark steel */
+  --primary-foreground: oklch(0.12 0.01 50);
+
+  --secondary: oklch(0.22 0.015 50);           /* charred wood */
+  --secondary-foreground: oklch(0.92 0.01 70);
+
+  --muted: oklch(0.2 0.012 50);
+  --muted-foreground: oklch(0.65 0.02 60);
+
+  --accent: oklch(0.58 0.14 40);               /* rust / oxidized copper */
+  --accent-foreground: oklch(0.12 0.01 50);
+
+  --destructive: oklch(0.65 0.2 25);
+
   --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.45 0.1 145);
-  --chart-1: oklch(0.45 0.1 145);
-  --chart-2: oklch(0.65 0.18 40);
-  --chart-3: oklch(0.55 0.15 35);
-  --chart-4: oklch(0.35 0.08 145);
-  --chart-5: oklch(0.75 0.2 45);
-  --sidebar: oklch(0.15 0.01 145);
-  --sidebar-foreground: oklch(0.95 0.01 85);
-  --sidebar-primary: oklch(0.45 0.1 145);
-  --sidebar-primary-foreground: oklch(0.98 0.01 85);
-  --sidebar-accent: oklch(0.22 0.02 145);
-  --sidebar-accent-foreground: oklch(0.95 0.01 85);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.6 0.13 45);
+
+  --chart-1: oklch(0.6 0.13 45);                /* copper */
+  --chart-2: oklch(0.7 0.1 75);                  /* brass */
+  --chart-3: oklch(0.58 0.14 40);                /* rust */
+  --chart-4: oklch(0.5 0.09 130);                /* moss */
+  --chart-5: oklch(0.75 0.16 55);                /* warm ember */
+
+  --sidebar: oklch(0.14 0.011 50);
+  --sidebar-foreground: oklch(0.92 0.01 70);
+  --sidebar-primary: oklch(0.6 0.13 45);
+  --sidebar-primary-foreground: oklch(0.12 0.01 50);
+  --sidebar-accent: oklch(0.22 0.015 50);
+  --sidebar-accent-foreground: oklch(0.92 0.01 70);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.45 0.1 145);
+  --sidebar-ring: oklch(0.6 0.13 45);
 }
 
 @layer base {
@@ -122,12 +148,13 @@
   }
 }
 
+/* Ambient steam — kept warm/neutral so it reads against both plaster and steel backgrounds */
 .steam {
   position: absolute;
   bottom: -100px;
   width: 200px;
   height: 300px;
-  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+  background: radial-gradient(circle, rgba(255,246,235,0.14) 0%, rgba(255,246,235,0) 70%);
   filter: blur(30px);
   opacity: 0;
   animation: steamRise 8s infinite ease-in-out;
