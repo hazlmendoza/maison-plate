@@ -1,0 +1,924 @@
+"use client"
+
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import type React from "react"
+import Image from "next/image"
+import { AppSidebar } from "@/components/app-sidebar"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
+import {
+  MoreHorizontal,
+  Eye,
+  Search,
+  Loader2,
+  ArrowUpDown,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  UserCheck,
+  UsersIcon,
+  ShoppingBag,
+  UserX,
+  Send,
+} from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Dialog, DialogTrigger, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useToast } from "@/hooks/use-toast"
+import { useAdminRoute } from "@/hooks/use-protected-route"
+import {
+  type ColumnDef,
+  type ColumnFiltersState,
+  type RowSelectionState,
+  useReactTable,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+} from "@tanstack/react-table"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Playfair_Display } from "next/font/google"
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+})
+
+// User data types
+interface User {
+  id: number
+  name: string
+  email: string
+  phone?: string
+  address?: string
+  city?: string
+  zip_code?: string
+  role: string
+  created_at: string
+  updated_at: string
+}
+
+interface Order {
+  id: number
+  order_number: string
+  user_id: number
+  customer_name: string
+  customer_email: string
+  customer_phone: string
+  delivery_address: string
+  delivery_city: string
+  delivery_zip_code: string
+  payment_method: string
+  order_status: "pending" | "confirmed" | "preparing" | "ready" | "delivered" | "cancelled"
+  subtotal: number
+  delivery_fee: number
+  total_amount: number
+  notes?: string
+  receipt_file?: string
+  order_items: OrderItem[]
+  created_at: string
+  updated_at: string
+}
+
+interface OrderItem {
+  id: number
+  name: string
+  description: string
+  price: number
+  quantity: number
+  category: string
+  is_spicy: boolean
+  is_vegetarian: boolean
+  image_url: string
+}
+
+export default function UsersAdminPage() {
+  useAdminRoute() // Protect this route - only admins can access
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedUser, setSelectedUser] = useState<User | null>(null)
+  const { toast } = useToast()
+  const router = useRouter()
+
+  const [userOrders, setUserOrders] = useState<Order[]>([])
+  const [loadingOrders, setLoadingOrders] = useState(false)
+  const [showOrdersDialog, setShowOrdersDialog] = useState(false)
+  const [showEmailDialog, setShowEmailDialog] = useState(false)
+  const [emailSubject, setEmailSubject] = useState("")
+  const [emailMessage, setEmailMessage] = useState("")
+  const [sendingEmail, setSendingEmail] = useState(false)
+  const [showDeactivateDialog, setShowDeactivateDialog] = useState(false)
+  const [userToDeactivate, setUserToDeactivate] = useState<User | null>(null)
+  const [deactivatingUser, setDeactivatingUser] = useState(false)
+
+  // DataTable states
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [globalFilter, setGlobalFilter] = useState("")
+
+  const [isDesktop, setIsDesktop] = useState(false)
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth < 1024)
+    }
+    checkDesktop()
+    window.addEventListener("resize", checkDesktop)
+    return () => window.removeEventListener("resize", checkDesktop)
+  }, [])
+
+  // Fetch users
+  const fetchUsers = async () => {
+    try {
+      setLoading(true)
+      const token = localStorage.getItem("auth_token")
+
+      if (!token) {
+        toast({
+          variant: "destructive",
+          title: "Authentication Required",
+          description: "Please log in to access users.",
+        })
+        router.push("/login")
+        return
+      }
+
+      let url = "/api/users?per_page=100&role=customer"
+
+      if (globalFilter) {
+        url += `&search=${encodeURIComponent(globalFilter)}`
+      }
+
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem("auth_token")
+          router.push("/login")
+          return
+        }
+        throw new Error(`HTTP ${response.status}`)
+      }
+
+      const result = await response.json()
+
+      if (result.success) {
+        const usersData = result.data || []
+        setUsers(Array.isArray(usersData) ? usersData : [])
+      } else {
+        throw new Error(result.message || "Failed to fetch users")
+      }
+    } catch (error) {
+      console.error("Failed to fetch users:", error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to load users.",
+      })
+      setUsers([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchUsers()
+  }, [])
+
+  // Debounce search
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (globalFilter !== undefined) {
+        fetchUsers()
+      }
+    }, 500)
+
+    return () => clearTimeout(timeoutId)
+  }, [globalFilter])
+
+  const fetchUserOrders = async (userId: number) => {
+    try {
+      setLoadingOrders(true)
+      const token = localStorage.getItem("auth_token")
+
+      if (!token) {
+        toast({
+          variant: "destructive",
+          title: "Authentication Required",
+          description: "Please log in to view orders.",
+        })
+        return
+      }
+
+      const response = await fetch(`/api/orders?user_id=${userId}&per_page=100`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+
+      const result = await response.json()
+      console.log("[v0] Orders fetched for user:", userId, result)
+
+      if (result.success) {
+        const ordersData = Array.isArray(result.data) ? result.data : result.data?.data || []
+        setUserOrders(ordersData)
+      } else {
+        throw new Error(result.message || "Failed to fetch orders")
+      }
+    } catch (error) {
+      console.error("[v0] Failed to fetch orders:", error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to load user orders.",
+      })
+      setUserOrders([])
+    } finally {
+      setLoadingOrders(false)
+    }
+  }
+
+  const handleViewOrders = (user: User) => {
+    setSelectedUser(user)
+    setShowOrdersDialog(true)
+    fetchUserOrders(user.id)
+  }
+
+  const handleSendEmail = (user: User) => {
+    setSelectedUser(user)
+    setEmailSubject("")
+    setEmailMessage("")
+    setShowEmailDialog(true)
+  }
+
+  const sendEmail = async () => {
+    if (!selectedUser || !emailSubject || !emailMessage) {
+      toast({
+        variant: "destructive",
+        title: "Missing Information",
+        description: "Please fill in both subject and message.",
+      })
+      return
+    }
+
+    try {
+      setSendingEmail(true)
+      const token = localStorage.getItem("auth_token")
+
+      if (!token) {
+        toast({
+          variant: "destructive",
+          title: "Authentication Required",
+          description: "Please log in to send emails.",
+        })
+        return
+      }
+
+      const response = await fetch("/api/send-email", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: selectedUser.email,
+          subject: emailSubject,
+          message: emailMessage,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: "Unknown error" }))
+        throw new Error(errorData.message || `HTTP ${response.status}`)
+      }
+
+      const result = await response.json()
+
+      toast({
+        title: "Email Sent",
+        description: `Email successfully sent to ${selectedUser.name}`,
+      })
+
+      setShowEmailDialog(false)
+      setEmailSubject("")
+      setEmailMessage("")
+    } catch (error) {
+      console.error("[v0] Failed to send email:", error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to send email.",
+      })
+    } finally {
+      setSendingEmail(false)
+    }
+  }
+
+  const handleDeactivateUser = (user: User) => {
+    setUserToDeactivate(user)
+    setShowDeactivateDialog(true)
+  }
+
+  const deactivateUser = async () => {
+    if (!userToDeactivate) return
+
+    try {
+      setDeactivatingUser(true)
+      const token = localStorage.getItem("auth_token")
+
+      if (!token) {
+        toast({
+          variant: "destructive",
+          title: "Authentication Required",
+          description: "Please log in to deactivate users.",
+        })
+        return
+      }
+
+      const response = await fetch(`/api/users/${userToDeactivate.id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: "deactivated",
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: "Unknown error" }))
+        throw new Error(errorData.message || `HTTP ${response.status}`)
+      }
+
+      toast({
+        title: "User Deactivated",
+        description: `${userToDeactivate.name} has been deactivated successfully.`,
+      })
+
+      setShowDeactivateDialog(false)
+      setUserToDeactivate(null)
+
+      // Refresh the users list
+      fetchUsers()
+    } catch (error) {
+      console.error("Failed to deactivate user:", error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to deactivate user.",
+      })
+    } finally {
+      setDeactivatingUser(false)
+    }
+  }
+
+  // Define columns for DataTable
+  const columns: ColumnDef<User>[] = [
+    {
+      accessorKey: "id",
+      header: ({ column }) => (
+        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="p-0 h-auto font-normal">
+          ID
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => <div className="font-semibold text-gray-900">#{row.original.id}</div>,
+    },
+    {
+      accessorKey: "name",
+      header: ({ column }) => (
+        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="p-0 h-auto font-normal">
+          Name
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => (
+        <div className="min-w-0">
+          <div className="font-medium text-gray-900 truncate">{row.original.name}</div>
+          <div className="text-xs text-gray-500 truncate">{row.original.email}</div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "phone",
+      header: "Phone",
+      cell: ({ row }) => <div className="text-sm hidden lg:block">{row.original.phone || "N/A"}</div>,
+    },
+    {
+      accessorKey: "city",
+      header: "City",
+      cell: ({ row }) => <div className="text-sm hidden lg:block">{row.original.city || "N/A"}</div>,
+    },
+    {
+      accessorKey: "role",
+      header: "Role",
+      cell: ({ row }) => (
+        <Badge variant="outline" className="text-xs">
+          {row.original.role}
+        </Badge>
+      ),
+    },
+    {
+      accessorKey: "created_at",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="p-0 h-auto font-normal hidden lg:flex"
+        >
+          Joined
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => (
+        <div className="text-sm hidden lg:block">
+          {new Date(row.original.created_at).toLocaleDateString("en-US", {
+            month: "short",
+            day: "2-digit",
+            year: "numeric",
+          })}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "actions",
+      header: ({ column }) => <div className="p-0 h-auto font-normal hidden lg:flex">Actions</div>,
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const user = row.original
+        return (
+          <div className="flex items-center gap-1">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="sm" onClick={() => setSelectedUser(user)} className="h-8 w-8 p-0 sm:h-auto sm:w-auto sm:px-2">
+                  <Eye className="h-4 w-4" />
+                  <span className="ml-1 sr-only sm:not-sr-only hidden sm:inline">View</span>
+                </Button>
+              </DialogTrigger>
+
+              <DialogContent className="w-[95vw] sm:max-w-2xl max-h-[92vh] overflow-y-auto rounded-2xl border-0 shadow-2xl p-0 text-gray-950">
+                {selectedUser && (
+                  <>
+                    <div className="sticky top-0 z-10 bg-[#162A3A] px-6 py-5 rounded-t-2xl">
+                      <DialogHeader>
+                        <DialogTitle className="text-2xl font-bold text-white">User Details - {selectedUser.name}</DialogTitle>
+                        <p className="text-white/50 text-sm mt-0.5">Complete information for this user</p>
+                      </DialogHeader>
+                    </div>
+                    <div className="p-5 space-y-4 bg-[#f5f0e8]">
+                      {/* User Info Card */}
+                      <div className="rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+                        <div className="px-5 py-3 bg-gradient-to-r from-[#162A3A] to-[#1e3a50] flex items-center gap-2">
+                          <span className="text-[#d4a24c] text-sm font-semibold uppercase tracking-wider">Personal Information</span>
+                        </div>
+                        <CardContent className="space-y-4 pt-4 bg-white">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <p className="text-md font-semibold text-gray-900">Full Name</p>
+                              <p className="font-medium">{selectedUser.name}</p>
+                            </div>
+
+                            <div>
+                              <p className="text-md font-semibold text-gray-900">Role</p>
+                              <Badge variant="outline" className="text-sm">
+                                {selectedUser.role}
+                              </Badge>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 text-sm">
+                            <Mail className="w-4 h-4 text-gray-400" />
+                            <p>{selectedUser.email}</p>
+                          </div>
+
+                          {selectedUser.phone && (
+                            <div className="flex items-center gap-2 text-sm">
+                              <Phone className="w-4 h-4 text-gray-400" />
+                              <p>{selectedUser.phone}</p>
+                            </div>
+                          )}
+
+                          {selectedUser.address && (
+                            <div className="flex items-start gap-2 text-sm">
+                              <MapPin className="w-5 h-5 text-gray-800 mt-0.5" />
+                              <div>
+                                <p className="text-sm font-medium">{selectedUser.address}</p>
+                                {selectedUser.city && selectedUser.zip_code && (
+                                  <p className="text-gray-500">
+                                    {selectedUser.city}, {selectedUser.zip_code}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="pb-4 flex items-center gap-2 text-sm pt-2 border-t">
+                            <Calendar className="w-4 h-4 text-gray-400" />
+                            <p className="text-gray-600">
+                              Joined on{" "}
+                              {new Date(selectedUser.created_at).toLocaleDateString("en-US", {
+                                month: "long",
+                                day: "2-digit",
+                                year: "numeric",
+                              })}
+                            </p>
+                          </div>
+                        </CardContent>
+                      </div>
+                      <div className="flex gap-3 pb-2">
+                        <Button variant="outline" className="flex-1 h-10 text-gray-600 border-gray-300 bg-white" onClick={() => setSelectedUser(null)}>Close</Button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </DialogContent>
+            </Dialog>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>User Actions</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => handleViewOrders(user)}>
+                  <ShoppingBag className="mr-2 h-4 w-4" />
+                  View Orders
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleSendEmail(user)}>
+                  <Send className="mr-2 h-4 w-4" />
+                  Send Email
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-yellow-600" onClick={() => handleDeactivateUser(user)}>
+                  <UserX className="mr-2 h-4 w-4" />
+                  Deactivate User
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )
+      },
+    },
+  ]
+
+  // Initialize table instance
+  const table = useReactTable({
+    data: users,
+    columns: columns,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      columnFilters,
+      globalFilter,
+      rowSelection,
+    },
+    onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
+    onRowSelectionChange: setRowSelection,
+  })
+
+  if (loading) {
+    return (
+      <SidebarProvider defaultOpen={!isDesktop}>
+        <div className="flex min-h-screen w-full bg-amber-50">
+          <AppSidebar />
+
+          <div className={`flex-1 min-w-0 ${isDesktop ? "ml-0" : "ml-72"}`}>
+            <div className="flex items-center justify-center min-h-screen w-full">
+              <div className="flex flex-col items-center gap-4 bg-[#162A3A] backdrop-blur-xl px-8 py-8 rounded-2xl border border-[#d4a24c]/70 shadow-2xl">
+                {/* Spinner */}
+                <div className="relative">
+                  <Loader2 className="h-8 w-8 animate-spin text-[#d4a24c]" />
+                  <div className="absolute inset-0 rounded-full border border-[#d4a24c]/20 blur-sm" />
+                </div>
+
+                {/* Text */}
+                <div className="text-center">
+                  <p className="text-lg font-semibold text-white">Loading Customers</p>
+                  <p className="text-sm text-white/60">Please wait while we fetch the data...</p>
+                </div>
+
+                {/* Animated dots */}
+                <div className="flex gap-1">
+                  <span className="w-2 h-2 bg-[#d4a24c] rounded-full animate-bounce [animation-delay:-0.3s]" />
+                  <span className="w-2 h-2 bg-[#d4a24c] rounded-full animate-bounce [animation-delay:-0.15s]" />
+                  <span className="w-2 h-2 bg-[#d4a24c] rounded-full animate-bounce" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </SidebarProvider>
+    )
+  }
+
+  return (
+    <SidebarProvider defaultOpen={!isDesktop}>
+      <div className="flex min-h-screen w-full bg-amber-50">
+        <AppSidebar />
+        <div className={`flex-1 min-w-0 ${isDesktop ? "ml-0" : "ml-72"}`}>
+          {isDesktop && (
+            <div className="sticky top-0 z-50 flex h-14 items-center gap-3 border-b bg-[#162A3A] px-4 shadow-sm">
+              <SidebarTrigger className="-ml-1" />
+              <Image src="/logo.jpg" alt="Maison Plate Logo" width={40} height={40} className="object-contain rounded-full" />
+              <h1 className={`${playfair.className} text-lg font-semibold text-white`}>Maison Plate</h1>
+            </div>
+          )}
+
+          <main className="flex-1 overflow-auto p-3 sm:p-4 md:p-6">
+            <div className="max-w-full space-y-4 sm:space-y-6">
+              {/* Header */}
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Customer Management</h1>
+                  <p className="text-gray-600 mt-1">Manage customer accounts and information</p>
+                </div>
+
+                <div className="flex items-center gap-4 bg-white/70 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-yellow-100">
+                  <div className="flex items-center gap-2 text-sm">
+                    <UsersIcon className="w-5 h-5 text-yellow-500" />
+                    <span className="text-gray-600 font-medium">Total Customers:</span>
+                    <span className="font-bold text-yellow-600 text-lg">{users.length}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Filters and Search */}
+              <Card className="bg-white/70 backdrop-blur-sm shadow-xl p-0 pb-5 border-blue-100">
+                <CardHeader className="p-3 bg-[#162A3A] text-white rounded-t-lg">
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+                      <div className="relative flex-1 max-w-sm">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/70" />
+                        <Input
+                          placeholder="Search users..."
+                          value={globalFilter || ""}
+                          onChange={(event) => setGlobalFilter(event.target.value)}
+                          className="pl-9 pr-3 py-2 w-full bg-white/20 border-white/30 text-white placeholder:text-white/70 focus:bg-white/30 focus:border-white/50"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-sm text-gray-600 mb-4 font-medium">
+                    Showing {table.getFilteredRowModel().rows.length} of {users.length} users
+                  </div>
+                  <div className="w-full">
+                    <div className="rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
+                      <div className="overflow-x-auto">
+                        <table className="w-full min-w-[800px]">
+                          <thead className="bg-gray-50">
+                            <tr className="border-b border-gray-50">
+                              {table.getHeaderGroups().map((headerGroup) =>
+                                headerGroup.headers.map((header) => (
+                                  <th key={header.id} className="text-left p-2 sm:p-3 text-md font-semibold text-gray-700">
+                                    {header.isPlaceholder ? null : (
+                                      <div>
+                                        {typeof header.column.columnDef.header === "function"
+                                          ? header.column.columnDef.header(header.getContext())
+                                          : header.column.columnDef.header}
+                                      </div>
+                                    )}
+                                  </th>
+                                )),
+                              )}
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-50">
+                            {table.getRowModel().rows.map((row, index) => (
+                              <tr
+                                key={row.id}
+                                className="hover:bg-gray-50 transition-all duration-200 bg-white"
+                              >
+                                {row.getVisibleCells().map((cell) => (
+                                  <td key={cell.id} className="p-2 sm:p-3 text-xs sm:text-sm">
+                                    {typeof cell.column.columnDef.cell === "function"
+                                      ? cell.column.columnDef.cell(cell.getContext())
+                                      : (cell.getValue() as React.ReactNode)}
+                                  </td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    {table.getRowModel().rows.length === 0 && (
+                      <div className="text-center py-12 text-gray-500 bg-white rounded-lg border border-gray-100 mt-4">
+                        <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <UsersIcon className="w-8 h-8 text-gray-400" />
+                        </div>
+                        <p className="text-lg font-medium text-gray-700">No users found</p>
+                        {globalFilter && <p className="text-sm mt-1 text-gray-500">Try adjusting your search terms</p>}
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </main>
+        </div>
+      </div>
+
+      <Dialog open={showOrdersDialog} onOpenChange={setShowOrdersDialog}>
+        <DialogContent className="w-[95vw] sm:max-w-4xl max-h-[92vh] overflow-y-auto rounded-2xl border-0 shadow-2xl p-0 text-gray-950">
+          <div className="sticky top-0 z-10 bg-[#162A3A] px-6 py-5 rounded-t-2xl">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-white">Orders for {selectedUser?.name}</DialogTitle>
+              <p className="text-white/50 text-sm mt-0.5">View all orders placed by this customer</p>
+            </DialogHeader>
+          </div>
+          <div className="p-5 space-y-4 bg-[#f5f0e8]">
+            {loadingOrders ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-yellow-500" />
+                <span className="ml-2 text-gray-600">Loading orders...</span>
+              </div>
+            ) : userOrders.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <ShoppingBag className="w-12 h-12 mx-auto mb-2 text-gray-400" />
+                <p>No orders found for this user</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {userOrders.map((order) => (
+                  <Card key={order.id} className="rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                    <CardHeader className="bg-gradient-to-r from-[#162A3A] to-[#1e3a50] text-white rounded-t-2xl">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <CardTitle className="text-lg">Order #{order.order_number}</CardTitle>
+                          <CardDescription className="text-white/80">
+                            Placed on {new Date(order.created_at).toLocaleDateString()}
+                          </CardDescription>
+                        </div>
+                        <Badge
+                          variant={
+                            order.order_status === "delivered" ? "default" : order.order_status === "cancelled" ? "destructive" : "outline"
+                          }
+                          className="capitalize"
+                        >
+                          {order.order_status}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-4 bg-white">
+                      <div className="space-y-2">
+                        <p className="text-sm text-gray-600">
+                          <strong>Total:</strong> ₱{(order.total_amount ?? 0).toFixed(2)}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          <strong>Items:</strong> {order.order_items?.length || 0}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+            <div className="flex gap-3 pb-2">
+              <Button variant="outline" className="flex-1 h-10 text-gray-600 border-gray-300 bg-white" onClick={() => setShowOrdersDialog(false)}>Close</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showEmailDialog} onOpenChange={setShowEmailDialog}>
+        <DialogContent className="w-[95vw] sm:max-w-2xl max-h-[92vh] overflow-y-auto rounded-2xl border-0 shadow-2xl p-0 text-gray-950">
+          <div className="sticky top-0 z-10 bg-[#162A3A] px-6 py-5 rounded-t-2xl">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-white">Send Email to {selectedUser?.name}</DialogTitle>
+              <p className="text-white/50 text-sm mt-0.5">Compose and send an email to this customer</p>
+            </DialogHeader>
+          </div>
+          <div className="p-5 space-y-4 bg-[#f5f0e8]">
+            <div className="rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+              <div className="px-5 py-3 bg-gradient-to-r from-[#162A3A] to-[#1e3a50] flex items-center gap-2">
+                <span className="text-[#d4a24c] text-sm font-semibold uppercase tracking-wider">Email Details</span>
+              </div>
+              <div className="p-5 bg-white space-y-4">
+                <div>
+                  <Label htmlFor="email-to" className="text-gray-900 font-semibold">
+                    To
+                  </Label>
+                  <Input id="email-to" value={selectedUser?.email || ""} disabled className="mt-1 border-gray-300 focus:border-[#162A3A]" />
+                </div>
+                <div>
+                  <Label htmlFor="email-subject" className="text-gray-900 font-semibold">
+                    Subject
+                  </Label>
+                  <Input
+                    id="email-subject"
+                    placeholder="Enter email subject"
+                    value={emailSubject}
+                    onChange={(e) => setEmailSubject(e.target.value)}
+                    className="mt-1 border-gray-300 focus:border-[#162A3A]"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="email-message" className="text-gray-900 font-semibold">
+                    Message
+                  </Label>
+                  <Textarea
+                    id="email-message"
+                    placeholder="Enter your message"
+                    value={emailMessage}
+                    onChange={(e) => setEmailMessage(e.target.value)}
+                    className="mt-1 min-h-[150px] border-gray-300 focus:border-[#162A3A]"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-3 pb-2">
+              <Button variant="outline" onClick={() => setShowEmailDialog(false)} disabled={sendingEmail} className="flex-1 h-10 text-gray-600 border-gray-300 bg-white">
+                Cancel
+              </Button>
+              <Button
+                onClick={sendEmail}
+                disabled={sendingEmail || !emailSubject || !emailMessage}
+                className="flex-1 h-10 bg-[#162A3A] hover:bg-[#1e3a50] text-white rounded-xl font-semibold shadow-md"
+              >
+                {sendingEmail ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send className="mr-2 h-4 w-4" />
+                    Send Email
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={showDeactivateDialog} onOpenChange={setShowDeactivateDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-black">Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will deactivate the user account for <strong>{userToDeactivate?.name}</strong>. The user will no longer be able to access their
+              account, but their data will be preserved. You can reactivate this user later if needed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deactivatingUser} className="text-black">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={deactivateUser} disabled={deactivatingUser} className="bg-yellow-600 hover:bg-yellow-700">
+              {deactivatingUser ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deactivating...
+                </>
+              ) : (
+                "Deactivate User"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </SidebarProvider>
+  )
+}
