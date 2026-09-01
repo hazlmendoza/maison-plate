@@ -18,22 +18,22 @@ const FAQ_DATA = [
   {
     question: "What type of establishment is Maison Plate?",
     answer:
-      "Maison Plate is a premium coffee shop and bar specializing in artisan coffee, craft cocktails, and a curated selection of pastries and light bites. Our name reflects our commitment to quality beans and exceptional beverages.",
+      "Maison Plate is a rustic-industrial restaurant specializing in wood-fired mains, seasonal plates, and a curated wine and cocktail list. Our dining room is built from reclaimed steel and aged oak, with an open kitchen you can watch from your table.",
   },
   {
     question: "What are your operating hours?",
     answer:
-      "Our operating hours are Monday to Friday from 7:00 AM to 12:00 AM, Saturday from 8:00 AM to 1:00 AM, and Sunday from 8:00 AM to 11:00 PM.",
+      "Our operating hours are Monday to Friday from 11:00 AM to 10:00 PM, Saturday from 11:00 AM to 11:00 PM, and Sunday from 11:00 AM to 9:00 PM.",
   },
   {
     question: "Do you offer vegetarian or vegan options?",
     answer:
-      "Yes! We offer vegetarian and vegan options including plant-based pastries, dairy-free lattes, vegetable-based light bites, and various coffee alternatives.",
+      "Yes! We offer vegetarian and vegan options including wood-fired vegetable mains, plant-based sides, and dairy-free dessert options. Just let your server know and we'll walk you through what's available.",
   },
   {
     question: "What makes Maison Plate special?",
     answer:
-      "Maison Plate stands out with our commitment to artisan coffee roasting, premium ingredients, and a cozy atmosphere perfect for any time of day. Whether you're starting your morning or enjoying an evening cocktail, we provide an exceptional experience.",
+      "Maison Plate stands out with our commitment to live-fire cooking, honestly sourced ingredients, and a dining room built to feel like a workshop rather than a restaurant. Whether it's a long lunch or a late dinner by the fire, we aim to make it memorable.",
   },
   {
     question: "Do you take reservations?",
@@ -43,7 +43,7 @@ const FAQ_DATA = [
   {
     question: "What are your signature items?",
     answer:
-      "Our signature items include our house-roasted coffee blends, craft cocktails, artisanal pastries, and specialty lattes. Each drink is crafted with precision and the finest ingredients.",
+      "Our signature items include our wood-fired mains, seasonal chef's specials, and a hand-picked wine and cocktail list. Each dish is prepared over live fire with ingredients sourced from local farms and butchers.",
   },
 ]
 
@@ -139,31 +139,34 @@ export default function CustomerServiceChatbot() {
   } 
 
   return (
-    <>
-      {/* Floating Button - Crimson themed */}
+    // `dark` forced on both the floating button and chat window so they
+    // stay the same blackened-steel/copper look as the rest of the site,
+    // regardless of the theme toggle.
+    <div className="dark">
+      {/* Floating Button */}
       {!isOpen && (
         <Button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-xl bg-gradient-to-r from-[#d4a24c] to-[#8b4513] hover:from-[#e0b060] hover:to-[#a0522d] z-50 transition-all duration-300 hover:scale-110"
+          className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-xl bg-gradient-to-r from-accent to-[oklch(0.4_0.09_38)] hover:from-accent/90 hover:to-[oklch(0.45_0.09_38)] z-50 transition-all duration-300 hover:scale-110"
           size="icon"
         >
-          <MessageCircle className="h-7 w-7 text-white" />
+          <MessageCircle className="h-7 w-7 text-accent-foreground" />
         </Button>
       )}
 
       {/* Chat Window */}
       {isOpen && (
-        <Card className="fixed bottom-0 right-0 md:bottom-6 md:right-6 w-full md:w-[500px] h-[85vh] md:h-[600px] max-h-[700px] shadow-2xl z-50 flex flex-col border-[#d4a24c]/20 rounded-t-2xl md:rounded-2xl overflow-hidden p-0 bg-white">
-          {/* Header - Crimson gradient */}
-          <CardHeader className="bg-gradient-to-r from-[#d4a24c] to-[#8b4513] text-white flex flex-row items-center justify-between p-4 flex-shrink-0">
+        <Card className="fixed bottom-0 right-0 md:bottom-6 md:right-6 w-full md:w-[500px] h-[85vh] md:h-[600px] max-h-[700px] shadow-2xl z-50 flex flex-col border-accent/20 rounded-t-sm md:rounded-sm overflow-hidden p-0 bg-card">
+          {/* Header */}
+          <CardHeader className="bg-gradient-to-r from-accent to-[oklch(0.4_0.09_38)] text-accent-foreground flex flex-row items-center justify-between p-4 flex-shrink-0">
             <div className="flex items-center gap-3">
-              <div className="h-11 w-11 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+              <div className="h-11 w-11 rounded-full bg-accent-foreground/20 flex items-center justify-center backdrop-blur-sm">
                 <MessageCircle className="h-6 w-6" />
               </div>
               <div>
                 <CardTitle className="text-lg font-semibold">Customer Service</CardTitle>
-                <p className="text-xs text-white/90 flex items-center gap-1">
-                  <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                <p className="text-xs text-accent-foreground/90 flex items-center gap-1">
+                  <span className="w-2 h-2 bg-accent-foreground rounded-full animate-pulse"></span>
                   Maison Plate
                 </p>
               </div>
@@ -172,13 +175,13 @@ export default function CustomerServiceChatbot() {
               variant="ghost"
               size="icon"
               onClick={() => setIsOpen(false)}
-              className="text-white hover:bg-white/20 rounded-full"
+              className="text-accent-foreground hover:bg-accent-foreground/20 rounded-full"
             >
               <X className="h-5 w-5" />
             </Button>
           </CardHeader>
 
-          <CardContent className="flex-1 flex flex-col p-0 overflow-hidden bg-gradient-to-b from-gray-50 to-white">
+          <CardContent className="flex-1 flex flex-col p-0 overflow-hidden bg-background">
             {/* Messages Area */}
             <div className="flex-1 overflow-hidden">
               <ScrollArea ref={scrollAreaRef} className="h-full px-4 py-3">
@@ -189,16 +192,16 @@ export default function CustomerServiceChatbot() {
                       className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
                     >
                       <div
-                        className={`max-w-[85%] rounded-2xl px-4 py-2.5 shadow-sm ${
+                        className={`max-w-[85%] rounded-sm px-4 py-2.5 shadow-sm ${
                           message.sender === "user"
-                            ? "bg-gradient-to-r from-[#d4a24c] to-[#8b4513] text-white rounded-tr-sm"
-                            : "bg-white text-gray-800 border border-gray-200 rounded-tl-sm"
+                            ? "bg-gradient-to-r from-accent to-[oklch(0.4_0.09_38)] text-accent-foreground rounded-tr-sm"
+                            : "bg-foreground/5 text-foreground border border-border rounded-tl-sm"
                         }`}
                       >
                         <p className="text-sm leading-relaxed">{message.text}</p>
                         <p
                           className={`text-[10px] mt-1.5 ${
-                            message.sender === "user" ? "text-white/80" : "text-gray-400"
+                            message.sender === "user" ? "text-accent-foreground/80" : "text-foreground/40"
                           }`}
                         >
                           {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
@@ -209,18 +212,18 @@ export default function CustomerServiceChatbot() {
 
                   {isTyping && (
                     <div className="flex justify-start">
-                      <div className="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-gray-200">
+                      <div className="bg-foreground/5 rounded-sm rounded-tl-sm px-4 py-3 shadow-sm border border-border">
                         <div className="flex gap-1">
                           <div
-                            className="w-2 h-2 bg-[#d4a24c] rounded-full animate-bounce"
+                            className="w-2 h-2 bg-accent rounded-full animate-bounce"
                             style={{ animationDelay: "0ms" }}
                           ></div>
                           <div
-                            className="w-2 h-2 bg-[#d4a24c] rounded-full animate-bounce"
+                            className="w-2 h-2 bg-accent rounded-full animate-bounce"
                             style={{ animationDelay: "150ms" }}
                           ></div>
                           <div
-                            className="w-2 h-2 bg-[#d4a24c] rounded-full animate-bounce"
+                            className="w-2 h-2 bg-accent rounded-full animate-bounce"
                             style={{ animationDelay: "300ms" }}
                           ></div>
                         </div>
@@ -233,8 +236,8 @@ export default function CustomerServiceChatbot() {
 
             {/* Quick Replies Section */}
             {!isChatEnded && (
-              <div className="border-t-2 border-gray-200 bg-white px-4 py-3 flex-shrink-0">
-                <p className="text-[11px] font-semibold text-gray-500 mb-2.5 uppercase tracking-wide">Quick replies:</p>
+              <div className="border-t border-border bg-card px-4 py-3 flex-shrink-0">
+                <p className="text-[11px] font-semibold text-foreground/50 mb-2.5 uppercase tracking-wide">Quick replies:</p>
                 <div className="max-h-[140px] overflow-y-auto">
                   <div className="flex flex-wrap gap-2 pr-1">
                     {FAQ_DATA.map((faq, index) => (
@@ -242,7 +245,7 @@ export default function CustomerServiceChatbot() {
                         key={index}
                         onClick={() => handleFAQClick(faq.question, faq.answer)}
                         disabled={isTyping}
-                        className="text-[11px] px-3 py-1.5 rounded-full border-2 border-[#d4a24c]/30 text-[#d4a24c] hover:bg-[#d4a24c] hover:text-white hover:border-[#d4a24c] bg-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium whitespace-normal text-left leading-snug"
+                        className="text-[11px] px-3 py-1.5 rounded-sm border border-accent/30 text-accent hover:bg-accent hover:text-accent-foreground hover:border-accent bg-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium whitespace-normal text-left leading-snug"
                       >
                         {faq.question}
                       </button>
@@ -253,22 +256,22 @@ export default function CustomerServiceChatbot() {
             )}
 
             {/* Footer */}
-            <div className="border-t border-gray-200 px-4 py-3 bg-white flex-shrink-0">
+            <div className="border-t border-border px-4 py-3 bg-card flex-shrink-0">
               {!isChatEnded ? (
                 <Button
                   onClick={handleEndChat}
                   variant="outline"
-                  className="w-full text-sm border-2 border-[#d4a24c]/30 text-[#d4a24c] hover:bg-[#d4a24c] hover:text-white hover:border-[#d4a24c] bg-white font-medium rounded-xl h-10 transition-all duration-200"
+                  className="w-full text-sm rounded-sm border border-accent/30 text-accent hover:bg-accent hover:text-accent-foreground hover:border-accent bg-transparent font-medium h-10 transition-all duration-200"
                   disabled={isTyping}
                 >
                   End Chat
                 </Button>
               ) : (
                 <div className="text-center">
-                  <p className="text-sm text-gray-500 mb-3 font-medium">Chat has ended</p>
+                  <p className="text-sm text-foreground/50 mb-3 font-medium">Chat has ended</p>
                   <Button
                     onClick={handleNewChat}
-                    className="w-full bg-gradient-to-r from-[#d4a24c] to-[#8b4513] hover:from-[#e0b060] hover:to-[#a0522d] text-white font-medium rounded-xl h-10 shadow-md"
+                    className="w-full rounded-sm bg-gradient-to-r from-accent to-[oklch(0.4_0.09_38)] hover:from-accent/90 hover:to-[oklch(0.45_0.09_38)] text-accent-foreground font-medium h-10 shadow-md"
                   >
                     <RotateCcw className="h-4 w-4 mr-2" />
                     Start New Chat
@@ -279,6 +282,6 @@ export default function CustomerServiceChatbot() {
           </CardContent>
         </Card>
       )}
-    </>
+    </div>
   )
 }

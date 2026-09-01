@@ -5,8 +5,21 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { ArrowLeft, Plus, Edit, Trash2, Check, MapPin, Mail, Phone, User } from "lucide-react"
-import { AddAddressModal, type AddressFormData } from "@/components/add-address-modal"
+import {
+  ArrowLeft,
+  Plus,
+  Edit,
+  Trash2,
+  Check,
+  MapPin,
+  Mail,
+  Phone,
+  User,
+} from "lucide-react"
+import {
+  AddAddressModal,
+  type AddressFormData,
+} from "@/components/add-address-modal"
 import { toast } from "@/hooks/use-toast"
 import { useProtectedRoute } from "@/hooks/use-protected-route"
 import {
@@ -20,11 +33,17 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { motion } from "framer-motion"
-import LumeLoaderMinimal from "@/components/oppa-loader"
 import { Playfair_Display } from "next/font/google"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
+import Loading from "@/components/loading"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -191,7 +210,9 @@ export default function ProfilePage() {
       const newAddress = data.data || data.address
 
       if (editingId) {
-        setAddresses(addresses.map((addr) => (addr.id === editingId ? newAddress : addr)))
+        setAddresses(
+          addresses.map((addr) => (addr.id === editingId ? newAddress : addr)),
+        )
         setEditingId(null)
         toast({
           title: "Success",
@@ -307,7 +328,9 @@ export default function ProfilePage() {
       const updatedAddresses = data.addresses || []
       setAddresses(updatedAddresses)
 
-      const currentAddress = updatedAddresses.find((addr: Address) => addr.id === address.id)
+      const currentAddress = updatedAddresses.find(
+        (addr: Address) => addr.id === address.id,
+      )
 
       if (!currentAddress) {
         throw new Error("Address not found")
@@ -345,9 +368,7 @@ export default function ProfilePage() {
   }
 
   if (loading) {
-    return (
-      <LumeLoaderMinimal />
-    )
+    return <Loading />
   }
 
   if (!user) {
@@ -355,52 +376,64 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className="min-h-screen py-24 bg-[#0b1d26] text-white">
+    // `dark` forced so this page stays the same blackened-steel/copper
+    // room as the rest of the site, regardless of the theme toggle.
+    <main className="dark min-h-screen py-24 bg-background text-foreground">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-[#d4a24c]/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#d4a24c]/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-125 bg-[#d4a24c]/20 rounded-full blur-3xl animate-pulse delay-500"></div>
+        <div className="absolute top-0 left-0 w-96 h-96 bg-accent/30 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accent/20 rounded-full blur-3xl animate-pulse delay-500"></div>
       </div>
 
       <div className="container mx-auto px-4 max-w-5xl relative z-10">
         {/* Header */}
         <div className="mb-8">
-          <h1 className={`${playfair.className} text-5xl font-bold text-white text-center mb-2`}>Account Settings</h1>
-          <p className="text-white/70 text-center">Manage your personal information and delivery addresses</p>
+          <h1
+            className={`${playfair.className} text-5xl font-bold text-foreground text-center mb-2`}
+          >
+            Account Settings
+          </h1>
+          <p className="text-foreground/70 text-center">
+            Manage your personal information and delivery addresses
+          </p>
         </div>
 
         {/* User Profile Card */}
-        <Card className="mb-8 overflow-hidden bg-[#0c222b] rounded-2xl p-8 border border-[#a47015]/60 text-center hover:border-[#d4a24c]/40 transition shadow-[0_0_20px_rgba(212,162,76,0.35)]">
+        <Card className="mb-8 overflow-hidden bg-card rounded-sm p-8 border border-accent/30 text-center hover:border-accent/60 hover:shadow-lg hover:shadow-accent/20 transition">
           {/* Header */}
           <div className="flex items-center gap-4 px-5">
-            <div className="h-16 w-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-              <User className="h-8 w-8 text-white" />
+            <div className="h-16 w-16 rounded-full bg-foreground/10 backdrop-blur-sm flex items-center justify-center">
+              <User className="h-8 w-8 text-foreground" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-white">{user.name}</h2>
-              <p className="text-white/70">Valued Customer</p>
+              <h2 className="text-2xl font-bold text-foreground">
+                {user.name}
+              </h2>
+              <p className="text-foreground/70">Valued Customer</p>
             </div>
           </div>
 
           {/* Contact info */}
           <div className="p-8 grid md:grid-cols-2 gap-8">
             <div>
-              <div className="flex items-center gap-2 text-sm text-white/70 uppercase tracking-wide mb-2">
+              <div className="flex items-center gap-2 text-sm text-foreground/70 uppercase tracking-wide mb-2">
                 <Mail className="h-4 w-4" />
                 EMAIL ADDRESS
               </div>
-              <p className="text-lg font-semibold text-white">{user.email}</p>
+              <p className="text-lg font-semibold text-foreground">
+                {user.email}
+              </p>
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2 text-sm text-white/70 uppercase tracking-wide">
+                <div className="flex items-center gap-2 text-sm text-foreground/70 uppercase tracking-wide">
                   <Phone className="h-4 w-4" />
                   PHONE NUMBER
                 </div>
 
                 <Button
-                  className="bg-[#d4a24c] hover:bg-[#d4a24c]/70 border-white/30 text-black "
+                  className="rounded-sm bg-accent hover:bg-accent/85 text-accent-foreground"
                   onClick={() => {
                     setPhoneInput(user.phone || "")
                     setIsPhoneModalOpen(true)
@@ -411,7 +444,9 @@ export default function ProfilePage() {
                 </Button>
               </div>
 
-              <p className="text-lg font-semibold text-white">{user.phone || "Not provided"}</p>
+              <p className="text-lg font-semibold text-foreground">
+                {user.phone || "Not provided"}
+              </p>
             </div>
           </div>
         </Card>
@@ -420,12 +455,16 @@ export default function ProfilePage() {
         <div>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
             <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-[#d4a24c] flex items-center justify-center flex-shrink-0">
-                <MapPin className="h-6 w-6 text-[#0c222b] " />
+              <div className="h-12 w-12 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
+                <MapPin className="h-6 w-6 text-accent-foreground" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-white">Delivery Addresses</h2>
-                <p className="text-sm text-white/70">Manage where we deliver your orders</p>
+                <h2 className="text-2xl font-bold text-foreground">
+                  Delivery Addresses
+                </h2>
+                <p className="text-sm text-foreground/70">
+                  Manage where we deliver your orders
+                </p>
               </div>
             </div>
             {addresses.length < 5 && (
@@ -435,7 +474,7 @@ export default function ProfilePage() {
                   setEditingData(undefined)
                   setIsModalOpen(true)
                 }}
-                className="bg-[#d4a24c] hover:bg-[#d4a24c]/90 text-[#0c222b] shadow-md w-full sm:w-auto font-bold"
+                className="rounded-sm bg-accent hover:bg-accent/85 text-accent-foreground shadow-md w-full sm:w-auto font-bold"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add New Address
@@ -446,46 +485,54 @@ export default function ProfilePage() {
           {/* Addresses List */}
           {loading ? (
             <div className="text-center py-12">
-              <p className="text-white/70">Loading addresses...</p>
+              <p className="text-foreground/70">Loading addresses...</p>
             </div>
           ) : addresses.length === 0 ? (
-            <Card className="p-12 text-center border-2 border-dashed border-white/30 bg-[#0c222b] /70 backdrop-blur-sm">
-              <MapPin className="h-12 w-12 text-white/50 mx-auto mb-4" />
-              <p className="text-white text-lg font-medium">No addresses yet</p>
-              <p className="text-white/70 text-sm mt-1">Add your first delivery address to get started</p>
+            <Card className="p-12 text-center rounded-sm border-2 border-dashed border-border bg-card/70 backdrop-blur-sm">
+              <MapPin className="h-12 w-12 text-foreground/40 mx-auto mb-4" />
+              <p className="text-foreground text-lg font-medium">
+                No addresses yet
+              </p>
+              <p className="text-foreground/70 text-sm mt-1">
+                Add your first delivery address to get started
+              </p>
             </Card>
           ) : (
             <div className="space-y-4">
               {addresses.map((address, index) => (
                 <Card
                   key={address.id}
-                  className={`overflow-hidden transition-all ${
+                  className={`overflow-hidden rounded-sm transition-all ${
                     address.is_default
-                      ? "ring-2 ring-[#d4a24c] shadow-2xl bg-[#0c222b] /90 backdrop-blur-sm border-white/50"
-                      : "border-white/30 shadow-xl hover:shadow-2xl bg-[#0c222b] /70 backdrop-blur-sm"
+                      ? "ring-2 ring-accent shadow-2xl bg-card/90 backdrop-blur-sm border-accent/40"
+                      : "border-border shadow-xl hover:shadow-2xl bg-card/70 backdrop-blur-sm"
                   }`}
                 >
                   {/* Address Content */}
                   <div className="p-4">
                     <div className="flex items-start gap-3 mb-4">
-                      <div className="h-12 w-12 rounded-xl bg-[#d4a24c] flex items-center justify-center flex-shrink-0 shadow-md">
-                        <span className="text-white text-xl font-bold">{index + 1}</span>
+                      <div className="h-12 w-12 rounded-sm bg-accent flex items-center justify-center flex-shrink-0 shadow-md">
+                        <span className="text-accent-foreground text-xl font-bold">
+                          {index + 1}
+                        </span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2 mb-2">
-                          <h3 className="text-base font-bold text-white break-words leading-tight">{address.street}</h3>
+                          <h3 className="text-base font-bold text-foreground break-words leading-tight">
+                            {address.street}
+                          </h3>
                           {address.is_default && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#d4a24c]  text-white text-xs font-semibold rounded-full shadow-sm flex-shrink-0">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-accent text-accent-foreground text-xs font-semibold rounded-sm shadow-sm flex-shrink-0">
                               <Check className="h-3 w-3" />
                               Default
                             </span>
                           )}
                         </div>
-                        <div className="space-y-0.5 text-sm text-white/70">
+                        <div className="space-y-0.5 text-sm text-foreground/70">
                           <p>
                             {address.city}, {address.state}
                           </p>
-                          <p className="text-white/60">
+                          <p className="text-foreground/60">
                             {address.postal_code}, {address.country}
                           </p>
                         </div>
@@ -493,13 +540,13 @@ export default function ProfilePage() {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex flex-wrap gap-2 pt-3 border-t border-white/20">
+                    <div className="flex flex-wrap gap-2 pt-3 border-t border-border">
                       {!address.is_default && (
                         <Button
                           onClick={() => handleSetDefault(address.id)}
                           variant="outline"
                           size="sm"
-                          className="bg-slate-700 flex-1 min-w-[140px] border-white/30 text-white hover:bg-white/10 font-medium"
+                          className="rounded-sm bg-foreground/10 flex-1 min-w-[140px] border-border text-foreground hover:bg-foreground/15 font-medium"
                         >
                           <Check className="h-4 w-4 mr-1.5" />
                           Set as Default
@@ -509,7 +556,7 @@ export default function ProfilePage() {
                         onClick={() => handleEditClick(address)}
                         variant="outline"
                         size="sm"
-                        className={`${!address.is_default ? "flex-1 min-w-[100px]" : "flex-1"} bg-slate-700 border-white/30 text-white hover:bg-white/10 font-medium`}
+                        className={`${!address.is_default ? "flex-1 min-w-[100px]" : "flex-1"} rounded-sm bg-foreground/10 border-border text-foreground hover:bg-foreground/15 font-medium`}
                         disabled={isLoadingAddress}
                       >
                         <Edit className="h-4 w-4 mr-1.5" />
@@ -519,7 +566,7 @@ export default function ProfilePage() {
                         onClick={() => confirmDelete(address.id)}
                         variant="outline"
                         size="sm"
-                        className={`${!address.is_default ? "flex-1 min-w-[100px]" : "flex-1"} bg-transparent border-red-300 text-red-300 hover:bg-red-500/20 font-medium`}
+                        className={`${!address.is_default ? "flex-1 min-w-[100px]" : "flex-1"} rounded-sm bg-transparent border-destructive/50 text-destructive hover:bg-destructive/10 font-medium`}
                       >
                         <Trash2 className="h-4 w-4 mr-1.5" />
                         Delete
@@ -535,13 +582,15 @@ export default function ProfilePage() {
 
       {/* update phone number modal */}
       <Dialog open={isPhoneModalOpen} onOpenChange={setIsPhoneModalOpen}>
-        <DialogContent className="bg-[#0c222b] border border-white/20 text-white">
+        <DialogContent className="rounded-sm bg-card border border-border text-foreground">
           <DialogHeader>
-            <DialogTitle className="text-white">Update Phone Number</DialogTitle>
+            <DialogTitle className="text-foreground">
+              Update Phone Number
+            </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-2">
-            <Label className="text-white/70">Phone Number</Label>
+            <Label className="text-foreground/70">Phone Number</Label>
             <Input
               value={phoneInput}
               type="tel"
@@ -553,14 +602,14 @@ export default function ProfilePage() {
                 setPhoneInput(onlyNumbers)
               }}
               placeholder="Enter phone number"
-              className="bg-[#0b1d26] border-white/20 text-white"
+              className="rounded-sm bg-background border-border text-foreground"
             />
           </div>
 
           <DialogFooter className="gap-2">
             <Button
               variant="outline"
-              className="bg-transparent border-white/30 text-white hover:bg-white/10"
+              className="rounded-sm bg-transparent border-border text-foreground hover:bg-foreground/10"
               onClick={() => setIsPhoneModalOpen(false)}
             >
               Cancel
@@ -569,7 +618,7 @@ export default function ProfilePage() {
             <Button
               onClick={handleUpdatePhone}
               disabled={updatingPhone || !phoneInput.trim()}
-              className="bg-[#d4a24c] hover:bg-[#d4a24c]/90 text-[#0c222b] font-bold"
+              className="rounded-sm bg-accent hover:bg-accent/85 text-accent-foreground font-bold"
             >
               {updatingPhone ? "Updating..." : "Save"}
             </Button>
@@ -588,14 +637,26 @@ export default function ProfilePage() {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="rounded-sm bg-card border border-border text-foreground">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-black">Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>This will permanently delete this delivery address. This action cannot be undone.</AlertDialogDescription>
+            <AlertDialogTitle className="text-foreground">
+              Are you sure?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-foreground/60">
+              This will permanently delete this delivery address. This action
+              cannot be undone.
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="text-black">Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => addressToDelete && handleDeleteAddress(addressToDelete)} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogCancel className="rounded-sm bg-card border-border text-foreground hover:bg-foreground/10">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() =>
+                addressToDelete && handleDeleteAddress(addressToDelete)
+              }
+              className="rounded-sm bg-destructive hover:bg-destructive/90 text-white"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

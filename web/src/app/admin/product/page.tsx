@@ -9,8 +9,26 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { MoreHorizontal, CheckCircle2, Eye, Plus, Search, Upload, Loader2, ArrowUpDown, Edit, Trash2, Save } from "lucide-react"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  MoreHorizontal,
+  CheckCircle2,
+  Eye,
+  Plus,
+  Search,
+  Upload,
+  Loader2,
+  ArrowUpDown,
+  Edit,
+  Trash2,
+  Save,
+} from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,7 +37,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,9 +72,15 @@ import {
 } from "@tanstack/react-table"
 import { Checkbox } from "@/components/ui/checkbox"
 import Image from "next/image"
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import { Playfair_Display } from "next/font/google"
 import { Switch } from "@/components/ui/switch"
+import logo from "@/assets/logo.jpg"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -70,7 +102,15 @@ interface Product {
   updated_at: string
 }
 
-const categories = ["Signature", "Classics", "Drinks", "Coffee", "Refreshers", "Food", "Desserts"]
+const categories = [
+  "Signature",
+  "Classics",
+  "Drinks",
+  "Coffee",
+  "Refreshers",
+  "Food",
+  "Desserts",
+]
 
 const getImageUrl = (imagePath: string): string => {
   if (!imagePath) {
@@ -81,7 +121,8 @@ const getImageUrl = (imagePath: string): string => {
     return imagePath
   }
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+  const API_BASE_URL =
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
   let fullPath = imagePath
   if (!imagePath.startsWith("images/products/")) {
@@ -151,11 +192,14 @@ export default function ProductsAdminPage() {
   const [deletingId, setDeletingId] = useState<number | null>(null)
 
   const formatPrice = (price: number | string): string => {
-    const numPrice = typeof price === "string" ? Number.parseFloat(price) : price
+    const numPrice =
+      typeof price === "string" ? Number.parseFloat(price) : price
     return numPrice.toFixed(2)
   }
 
-  const handleNewFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleNewFormChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target
     setNewFormData((prev) => ({ ...prev, [name]: value }))
   }
@@ -226,7 +270,8 @@ export default function ProductsAdminPage() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message || "There was an error creating the product.",
+        description:
+          error.message || "There was an error creating the product.",
       })
     } finally {
       setIsCreating(false)
@@ -271,7 +316,8 @@ export default function ProductsAdminPage() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message || "There was an error deleting the product.",
+        description:
+          error.message || "There was an error deleting the product.",
       })
     } finally {
       setDeletingId(null)
@@ -324,7 +370,7 @@ export default function ProductsAdminPage() {
   }
 
   const handleEditChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target
     setEditFormData((prev) => ({ ...prev, [name]: value }))
@@ -352,7 +398,7 @@ export default function ProductsAdminPage() {
       Object.entries(editFormData).forEach(([key, value]) => {
         fd.append(
           key,
-          typeof value === "boolean" ? (value ? "1" : "0") : String(value)
+          typeof value === "boolean" ? (value ? "1" : "0") : String(value),
         )
       })
 
@@ -368,7 +414,7 @@ export default function ProductsAdminPage() {
           Accept: "application/json",
         },
       })
-      
+
       const result = await res.json()
 
       if (!res.ok) throw new Error(result.message)
@@ -407,7 +453,13 @@ export default function ProductsAdminPage() {
           aria-label="Select all"
         />
       ),
-      cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />,
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
       enableSorting: false,
       enableHiding: false,
     },
@@ -419,27 +471,42 @@ export default function ProductsAdminPage() {
           {Object.keys(rowSelection).length > 0 && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm" className="flex items-center gap-2">
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle className="text-black">Are you sure?</AlertDialogTitle>
-                  <AlertDialogDescription>This will permanently delete {Object.keys(rowSelection).length} product(s).</AlertDialogDescription>
+                  <AlertDialogTitle className="text-black">
+                    Are you sure?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently delete{" "}
+                    {Object.keys(rowSelection).length} product(s).
+                  </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
-                  <AlertDialogCancel className="text-black">Cancel</AlertDialogCancel>
+                  <AlertDialogCancel className="text-black">
+                    Cancel
+                  </AlertDialogCancel>
                   <AlertDialogAction
                     onClick={async () => {
                       // Map table row IDs to actual product IDs
-                      const idsToDelete = Object.keys(rowSelection).map((rowId) => {
-                        const row = table.getRow(rowId)
-                        return row.original.id // this is the real product ID
-                      })
+                      const idsToDelete = Object.keys(rowSelection).map(
+                        (rowId) => {
+                          const row = table.getRow(rowId)
+                          return row.original.id // this is the real product ID
+                        },
+                      )
 
                       try {
-                        await Promise.all(idsToDelete.map((id) => handleDelete(id)))
+                        await Promise.all(
+                          idsToDelete.map((id) => handleDelete(id)),
+                        )
                         toast({
                           title: "Success",
                           description: `${idsToDelete.length} product(s) deleted successfully!`,
@@ -448,7 +515,8 @@ export default function ProductsAdminPage() {
                         toast({
                           variant: "destructive",
                           title: "Error",
-                          description: error.message || "Error deleting products",
+                          description:
+                            error.message || "Error deleting products",
                         })
                       } finally {
                         setRowSelection({}) // reset selection after deletion
@@ -470,21 +538,35 @@ export default function ProductsAdminPage() {
       header: "Image",
       cell: ({ row }) => (
         <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg overflow-hidden flex-shrink-0">
-          <Image src={getImageUrl(row.original.image)} alt={row.original.name} width={48} height={48} className="object-cover w-full h-full" />
+          <Image
+            src={getImageUrl(row.original.image)}
+            alt={row.original.name}
+            width={48}
+            height={48}
+            className="object-cover w-full h-full"
+          />
         </div>
       ),
     },
     {
       accessorKey: "name",
       header: ({ column }) => (
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="p-0 h-auto font-normal">
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="p-0 h-auto font-normal"
+        >
           Product Name <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
       cell: ({ row }) => (
         <div className="min-w-0">
-          <div className="font-semibold text-gray-900 truncate">{row.original.name}</div>
-          <div className="text-xs text-gray-500 sm:hidden truncate">{row.original.category}</div>
+          <div className="font-semibold text-gray-900 truncate">
+            {row.original.name}
+          </div>
+          <div className="text-xs text-gray-500 sm:hidden truncate">
+            {row.original.category}
+          </div>
         </div>
       ),
     },
@@ -498,8 +580,6 @@ export default function ProductsAdminPage() {
         >
           Category <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-
-
       ),
       cell: ({ row }) => (
         <Badge variant="outline" className="text-xs hidden sm:inline-flex">
@@ -510,20 +590,38 @@ export default function ProductsAdminPage() {
     {
       accessorKey: "price",
       header: ({ column }) => (
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="p-0 h-auto font-normal">
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="p-0 h-auto font-normal"
+        >
           Price <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      cell: ({ row }) => <div className="font-semibold">₱{formatPrice(row.original.price)}</div>,
+      cell: ({ row }) => (
+        <div className="font-semibold">₱{formatPrice(row.original.price)}</div>
+      ),
     },
     {
       accessorKey: "best_seller",
       header: ({ column }) => (
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="p-0 h-auto font-normal">
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="p-0 h-auto font-normal"
+        >
           Bestseller <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      cell: ({ row }) => <div className="font-semibold">{row.original.best_seller ? <Badge variant="default">Best Seller</Badge> : "-"}</div>,
+      cell: ({ row }) => (
+        <div className="font-semibold">
+          {row.original.best_seller ? (
+            <Badge variant="default">Best Seller</Badge>
+          ) : (
+            "-"
+          )}
+        </div>
+      ),
     },
     {
       accessorKey: "created_at",
@@ -538,13 +636,19 @@ export default function ProductsAdminPage() {
       ),
       cell: ({ row }) => (
         <div className="text-sm hidden lg:block">
-          {new Date(row.original.created_at).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" })}
+          {new Date(row.original.created_at).toLocaleDateString("en-US", {
+            month: "short",
+            day: "2-digit",
+            year: "numeric",
+          })}
         </div>
       ),
     },
     {
       accessorKey: "actions",
-      header: ({ column }) => <div className="p-0 h-auto font-normal hidden lg:flex">Actions</div>,
+      header: ({ column }) => (
+        <div className="p-0 h-auto font-normal hidden lg:flex">Actions</div>
+      ),
       id: "view",
       enableHiding: false,
       cell: ({ row }) => {
@@ -553,24 +657,34 @@ export default function ProductsAdminPage() {
           <div className="flex items-center gap-1">
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="ghost" size="sm" onClick={() => setSelectedProduct(product)} className="h-8 w-8 p-0 sm:h-auto sm:w-auto sm:px-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedProduct(product)}
+                  className="h-8 w-8 p-0 sm:h-auto sm:w-auto sm:px-2"
+                >
                   <Eye className="h-4 w-4" />
-                  <span className="ml-1 sr-only sm:not-sr-only hidden sm:inline">View</span>
+                  <span className="ml-1 sr-only sm:not-sr-only hidden sm:inline">
+                    View
+                  </span>
                 </Button>
               </DialogTrigger>
 
               <DialogContent className="lg:max-w-4xl max-h-[90vh] overflow-y-auto rounded-xl shadow-lg border border-gray-200 p-0 bg-white">
                 <div className="sticky top-0 z-10 bg-[#162A3A] px-6 py-5 rounded-t-2xl">
                   <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold text-white">Product Details</DialogTitle>
-                    <p className="text-white/50 text-sm mt-0.5">{selectedProduct?.name}</p>
+                    <DialogTitle className="text-2xl font-bold text-white">
+                      Product Details
+                    </DialogTitle>
+                    <p className="text-white/50 text-sm mt-0.5">
+                      {selectedProduct?.name}
+                    </p>
                   </DialogHeader>
                 </div>
 
                 {selectedProduct && (
                   <div className="p-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 justify-between items-center gap-6 mt-3 min-h-[380px]">
-
                       {/* LEFT - IMAGE */}
                       <div className="relative w-full aspect-square rounded-2xl overflow-hidden">
                         <Image
@@ -612,7 +726,6 @@ export default function ProductsAdminPage() {
 
                       {/* RIGHT - DETAILS */}
                       <div className="flex flex-col justify-between">
-
                         <div className="space-y-5">
                           {/* META */}
                           <div className="grid grid-cols-2 gap-3">
@@ -641,7 +754,8 @@ export default function ProductsAdminPage() {
                               Description
                             </p>
                             <p className="mt-2 text-sm text-gray-700 leading-relaxed">
-                              {selectedProduct.description || "No description available."}
+                              {selectedProduct.description ||
+                                "No description available."}
                             </p>
                           </div>
 
@@ -668,7 +782,6 @@ export default function ProductsAdminPage() {
                             </div>
                           )}
                         </div>
-
                       </div>
                     </div>
                   </div>
@@ -711,12 +824,22 @@ export default function ProductsAdminPage() {
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle className="font-bold text-2xl text-gray-900">Are you sure?</AlertDialogTitle>
-                      <AlertDialogDescription>This action will permanently delete &apos;{product.name}&apos;.</AlertDialogDescription>
+                      <AlertDialogTitle className="font-bold text-2xl text-gray-900">
+                        Are you sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action will permanently delete &apos;{product.name}
+                        &apos;.
+                      </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel className="text-gray-900">Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleDelete(product.id)} className="text-red-100 bg-red-800 hover:bg-red-700">
+                      <AlertDialogCancel className="text-gray-900">
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => handleDelete(product.id)}
+                        className="text-red-100 bg-red-800 hover:bg-red-700"
+                      >
                         Delete
                       </AlertDialogAction>
                     </AlertDialogFooter>
@@ -750,10 +873,14 @@ export default function ProductsAdminPage() {
   // Calculate pagination
   const filteredRows = table.getFilteredRowModel().rows
   const totalItems = filteredRows.length
-  const totalPages = itemsPerPage === -1 ? 1 : Math.ceil(totalItems / itemsPerPage)
+  const totalPages =
+    itemsPerPage === -1 ? 1 : Math.ceil(totalItems / itemsPerPage)
   const startIndex = itemsPerPage === -1 ? 0 : (currentPage - 1) * itemsPerPage
   const endIndex = itemsPerPage === -1 ? totalItems : startIndex + itemsPerPage
-  const paginatedRows = itemsPerPage === -1 ? filteredRows : filteredRows.slice(startIndex, endIndex)
+  const paginatedRows =
+    itemsPerPage === -1
+      ? filteredRows
+      : filteredRows.slice(startIndex, endIndex)
 
   // Reset to page 1 when items per page changes or filter changes
   useEffect(() => {
@@ -781,8 +908,12 @@ export default function ProductsAdminPage() {
 
                 {/* Text */}
                 <div className="text-center">
-                  <p className="text-lg font-semibold text-white">Loading Products</p>
-                  <p className="text-sm text-white/60">Please wait while we fetch the data...</p>
+                  <p className="text-lg font-semibold text-white">
+                    Loading Products
+                  </p>
+                  <p className="text-sm text-white/60">
+                    Please wait while we fetch the data...
+                  </p>
                 </div>
 
                 {/* Animated dots */}
@@ -807,8 +938,18 @@ export default function ProductsAdminPage() {
           {isDesktop && (
             <div className="sticky top-0 z-50 flex h-14 items-center gap-3 border-b bg-[#162A3A] px-4 shadow-sm">
               <SidebarTrigger className="-ml-1" />
-              <Image src="/logo.jpg" alt="Maison Plate Logo" width={40} height={40} className="object-contain rounded-full" />
-              <h1 className={`${playfair.className} text-lg font-semibold text-white`}>Maison Plate</h1>
+              <Image
+                src={logo}
+                alt="Maison Plate Logo"
+                width={40}
+                height={40}
+                className="object-contain rounded-full"
+              />
+              <h1
+                className={`${playfair.className} text-lg font-semibold text-white`}
+              >
+                Maison Plate
+              </h1>
             </div>
           )}
 
@@ -817,8 +958,12 @@ export default function ProductsAdminPage() {
               {/* Header */}
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
-                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Product Management</h1>
-                  <p className="text-gray-600 mt-1">Manage your restaurant&apos;s menu items</p>
+                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+                    Product Management
+                  </h1>
+                  <p className="text-gray-600 mt-1">
+                    Manage your restaurant&apos;s menu items
+                  </p>
                 </div>
               </div>
 
@@ -827,14 +972,15 @@ export default function ProductsAdminPage() {
                   <div className="flex flex-col gap-4">
                     <div className="flex flex-col sm:flex-row gap-3 items-center sm:items-center justify-between">
                       <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
-
                         {/* Search Bar */}
                         <div className="relative flex-1 max-w-sm">
                           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-950" />
                           <Input
                             placeholder="Search products..."
                             value={globalFilter || ""}
-                            onChange={(event) => setGlobalFilter(event.target.value)}
+                            onChange={(event) =>
+                              setGlobalFilter(event.target.value)
+                            }
                             className="pl-9 pr-3 py-2 w-full bg-blue-100 border-blue-950 text-gray-950 placeholder:text-gray-950 focus:bg-blue-50 focus:border-blue-500 transition-all duration-200"
                           />
                         </div>
@@ -854,7 +1000,9 @@ export default function ProductsAdminPage() {
                             </SelectTrigger>
 
                             <SelectContent>
-                              <SelectItem value="all">All Categories</SelectItem>
+                              <SelectItem value="all">
+                                All Categories
+                              </SelectItem>
 
                               {categories.map((category) => (
                                 <SelectItem key={category} value={category}>
@@ -867,34 +1015,51 @@ export default function ProductsAdminPage() {
                       </div>
 
                       {/* Add Product Button */}
-                      <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+                      <Dialog
+                        open={isCreateModalOpen}
+                        onOpenChange={setIsCreateModalOpen}
+                      >
                         <DialogTrigger asChild>
                           <Button
                             size="sm"
                             className="flex items-center gap-3 w-full sm:w-auto justify-center sm:justify-start bg-amber-500 text-[#162A3A] hover:bg-blue-50 hover:text-blue-800 font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
                           >
                             <Plus className="mr-2 h-4 w-4" />
-                            <span className="hidden sm:inline">Add Product</span>
+                            <span className="hidden sm:inline">
+                              Add Product
+                            </span>
                             <span className="sm:hidden">Add</span>
                           </Button>
                         </DialogTrigger>
                         <DialogContent className="w-[95vw] sm:max-w-2xl max-h-[92vh] overflow-y-auto rounded-2xl border-0 shadow-2xl p-0 text-gray-950">
                           <div className="sticky top-0 z-10 bg-[#162A3A] px-6 py-5 rounded-t-2xl">
                             <DialogHeader>
-                              <DialogTitle className="text-2xl font-bold text-white">Add New Product</DialogTitle>
-                              <p className="text-white/50 text-sm mt-0.5">Fill in the details for your new menu item.</p>
+                              <DialogTitle className="text-2xl font-bold text-white">
+                                Add New Product
+                              </DialogTitle>
+                              <p className="text-white/50 text-sm mt-0.5">
+                                Fill in the details for your new menu item.
+                              </p>
                             </DialogHeader>
                           </div>
                           <div className="p-5 space-y-4 bg-[#f5f0e8]">
-                            <form onSubmit={handleCreateSubmit} className="space-y-4">
+                            <form
+                              onSubmit={handleCreateSubmit}
+                              className="space-y-4"
+                            >
                               <div className="rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
                                 <div className="px-5 py-3 bg-gradient-to-r from-[#162A3A] to-[#1e3a50] flex items-center gap-2">
-                                  <span className="text-[#d4a24c] text-sm font-semibold uppercase tracking-wider">Product Details</span>
+                                  <span className="text-[#d4a24c] text-sm font-semibold uppercase tracking-wider">
+                                    Product Details
+                                  </span>
                                 </div>
                                 <div className="p-5 bg-white space-y-4">
                                   <div className="grid grid-cols-1 gap-4">
                                     <div>
-                                      <Label htmlFor="name" className="text-gray-700 font-bold text-md">
+                                      <Label
+                                        htmlFor="name"
+                                        className="text-gray-700 font-bold text-md"
+                                      >
                                         Product Name
                                       </Label>
                                       <Input
@@ -910,7 +1075,10 @@ export default function ProductsAdminPage() {
                                     </div>
 
                                     <div>
-                                      <Label htmlFor="description" className="text-gray-700 font-bold text-md">
+                                      <Label
+                                        htmlFor="description"
+                                        className="text-gray-700 font-bold text-md"
+                                      >
                                         Description
                                       </Label>
                                       <Textarea
@@ -926,9 +1094,14 @@ export default function ProductsAdminPage() {
                                     </div>
 
                                     <div>
-                                      <Label htmlFor="ingredients" className="text-gray-700 font-bold text-md">
+                                      <Label
+                                        htmlFor="ingredients"
+                                        className="text-gray-700 font-bold text-md"
+                                      >
                                         Ingredients
-                                        <span className="text-gray-400">(use | separator)</span>
+                                        <span className="text-gray-400">
+                                          (use | separator)
+                                        </span>
                                       </Label>
                                       <Textarea
                                         id="ingredients"
@@ -944,7 +1117,10 @@ export default function ProductsAdminPage() {
 
                                     <div className="grid grid-cols-2 gap-4">
                                       <div>
-                                        <Label htmlFor="price" className="text-gray-700 font-bold text-md">
+                                        <Label
+                                          htmlFor="price"
+                                          className="text-gray-700 font-bold text-md"
+                                        >
                                           Price (₱)
                                         </Label>
                                         <Input
@@ -963,17 +1139,29 @@ export default function ProductsAdminPage() {
                                       </div>
 
                                       <div>
-                                        <Label htmlFor="category" className="text-gray-700 font-bold text-md">
+                                        <Label
+                                          htmlFor="category"
+                                          className="text-gray-700 font-bold text-md"
+                                        >
                                           Category
                                         </Label>
-                                        <Select value={newFormData.category} onValueChange={handleCategoryChange} disabled={isCreating}>
+                                        <Select
+                                          value={newFormData.category}
+                                          onValueChange={handleCategoryChange}
+                                          disabled={isCreating}
+                                        >
                                           <SelectTrigger className="mt-1 border-blue-950 focus:border-blue-700 focus:ring-blue-800">
                                             <SelectValue placeholder="Select category" />
                                           </SelectTrigger>
                                           <SelectContent>
                                             {categories.map((category) => (
-                                              <SelectItem key={category} value={category}>
-                                                <span className="text-gray-800">{category}</span>
+                                              <SelectItem
+                                                key={category}
+                                                value={category}
+                                              >
+                                                <span className="text-gray-800">
+                                                  {category}
+                                                </span>
                                               </SelectItem>
                                             ))}
                                           </SelectContent>
@@ -984,8 +1172,13 @@ export default function ProductsAdminPage() {
                                     <div className="flex gap-3">
                                       <div className="flex items-center justify-between rounded-lg border border-blue-950 p-4 bg-white/40">
                                         <div className="space-y-1">
-                                          <Label className="text-gray-700 font-bold text-md">Best Seller</Label>
-                                          <p className="text-sm text-gray-600">Mark this product as a Best Seller Item</p>
+                                          <Label className="text-gray-700 font-bold text-md">
+                                            Best Seller
+                                          </Label>
+                                          <p className="text-sm text-gray-600">
+                                            Mark this product as a Best Seller
+                                            Item
+                                          </p>
                                         </div>
 
                                         <Switch
@@ -1002,8 +1195,12 @@ export default function ProductsAdminPage() {
 
                                       <div className="flex items-center justify-between rounded-lg border border-blue-950 p-4 bg-white/40">
                                         <div className="space-y-1">
-                                          <Label className="text-gray-700 font-bold text-md">Set</Label>
-                                          <p className="text-sm text-gray-600">Mark this product as a Set Item</p>
+                                          <Label className="text-gray-700 font-bold text-md">
+                                            Set
+                                          </Label>
+                                          <p className="text-sm text-gray-600">
+                                            Mark this product as a Set Item
+                                          </p>
                                         </div>
 
                                         <Switch
@@ -1020,7 +1217,10 @@ export default function ProductsAdminPage() {
                                     </div>
 
                                     <div>
-                                      <Label htmlFor="image" className="text-gray-700 font-bold text-md">
+                                      <Label
+                                        htmlFor="image"
+                                        className="text-gray-700 font-bold text-md"
+                                      >
                                         Product Image
                                       </Label>
                                       <div className="flex items-center gap-4 mt-1 text-gray-800">
@@ -1037,7 +1237,10 @@ export default function ProductsAdminPage() {
                                         <div className="mt-3">
                                           <div className="w-20 h-20 rounded-lg overflow-hidden border-2 border-blue-200 shadow-md">
                                             <Image
-                                              src={imagePreview || "/placeholder.svg"}
+                                              src={
+                                                imagePreview ||
+                                                "/placeholder.svg"
+                                              }
                                               alt="Preview"
                                               width={80}
                                               height={80}
@@ -1090,14 +1293,26 @@ export default function ProductsAdminPage() {
                 <CardContent>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
                     <div className="text-sm text-gray-600 font-medium">
-                      Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of {totalItems} products
+                      Showing {startIndex + 1} to{" "}
+                      {Math.min(endIndex, totalItems)} of {totalItems} products
                     </div>
                     <div className="flex items-center gap-2">
-                      <Label htmlFor="items-per-page" className="text-sm text-gray-600 whitespace-nowrap">
+                      <Label
+                        htmlFor="items-per-page"
+                        className="text-sm text-gray-600 whitespace-nowrap"
+                      >
                         Items per page:
                       </Label>
-                      <Select value={itemsPerPage === -1 ? "all" : itemsPerPage.toString()} onValueChange={handleItemsPerPageChange}>
-                        <SelectTrigger id="items-per-page" className="w-[100px] border-blue-200 focus:border-blue-400 focus:ring-blue-400">
+                      <Select
+                        value={
+                          itemsPerPage === -1 ? "all" : itemsPerPage.toString()
+                        }
+                        onValueChange={handleItemsPerPageChange}
+                      >
+                        <SelectTrigger
+                          id="items-per-page"
+                          className="w-[100px] border-blue-200 focus:border-blue-400 focus:ring-blue-400"
+                        >
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -1118,11 +1333,17 @@ export default function ProductsAdminPage() {
                           <tr className="bg-gray-50 border-b border-gray-100">
                             {table.getHeaderGroups().map((headerGroup) =>
                               headerGroup.headers.map((header) => (
-                                <th key={header.id} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
+                                <th
+                                  key={header.id}
+                                  className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap"
+                                >
                                   {header.isPlaceholder ? null : (
                                     <div className="flex items-center gap-2">
-                                      {typeof header.column.columnDef.header === "function"
-                                        ? header.column.columnDef.header(header.getContext())
+                                      {typeof header.column.columnDef.header ===
+                                      "function"
+                                        ? header.column.columnDef.header(
+                                            header.getContext(),
+                                          )
                                         : header.column.columnDef.header}
                                     </div>
                                   )}
@@ -1139,8 +1360,11 @@ export default function ProductsAdminPage() {
                             >
                               {row.getVisibleCells().map((cell) => (
                                 <td key={cell.id} className="px-4 py-3 text-sm">
-                                  {typeof cell.column.columnDef.cell === "function"
-                                    ? cell.column.columnDef.cell(cell.getContext())
+                                  {typeof cell.column.columnDef.cell ===
+                                  "function"
+                                    ? cell.column.columnDef.cell(
+                                        cell.getContext(),
+                                      )
                                     : (cell.getValue() as React.ReactNode)}
                                 </td>
                               ))}
@@ -1153,8 +1377,14 @@ export default function ProductsAdminPage() {
                   {table.getRowModel().rows.length === 0 && (
                     <div className="text-center py-12 text-gray-400 text-sm bg-white rounded-2xl border border-gray-100 shadow-xl mt-4">
                       <Search className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                      <p className="text-lg font-medium text-gray-600">No products found</p>
-                      {globalFilter && <p className="text-sm mt-1 text-gray-500">Try adjusting your search terms</p>}
+                      <p className="text-lg font-medium text-gray-600">
+                        No products found
+                      </p>
+                      {globalFilter && (
+                        <p className="text-sm mt-1 text-gray-500">
+                          Try adjusting your search terms
+                        </p>
+                      )}
                     </div>
                   )}
 
@@ -1177,7 +1407,9 @@ export default function ProductsAdminPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                          onClick={() =>
+                            setCurrentPage((prev) => Math.max(1, prev - 1))
+                          }
                           disabled={currentPage === 1}
                           className="border-blue-300 text-blue-600 hover:bg-blue-50 disabled:opacity-50"
                         >
@@ -1186,7 +1418,11 @@ export default function ProductsAdminPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                          onClick={() =>
+                            setCurrentPage((prev) =>
+                              Math.min(totalPages, prev + 1),
+                            )
+                          }
                           disabled={currentPage === totalPages}
                           className="border-blue-300 text-blue-600 hover:bg-blue-50 disabled:opacity-50"
                         >
@@ -1203,7 +1439,6 @@ export default function ProductsAdminPage() {
                         </Button>
                       </div>
                     </div>
-
                   )}
                 </CardContent>
               </Card>
@@ -1230,10 +1465,11 @@ export default function ProductsAdminPage() {
 
               {/* CONTENT */}
               <div className="p-5 space-y-6 text-gray-950">
-
                 {/* IMAGE SECTION */}
                 <div className="bg-white rounded-2xl border shadow-sm p-5 space-y-4">
-                  <Label className="text-gray-700 font-semibold">Product Image</Label>
+                  <Label className="text-gray-700 font-semibold">
+                    Product Image
+                  </Label>
 
                   <label className="flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-dashed border-[#d4a24c]/40 bg-amber-50/50 cursor-pointer hover:border-[#d4a24c] hover:bg-amber-50 transition-all group">
                     <div className="w-10 h-10 rounded-full bg-[#d4a24c]/10 group-hover:bg-[#d4a24c]/20 flex items-center justify-center flex-shrink-0">
@@ -1270,8 +1506,9 @@ export default function ProductsAdminPage() {
                           editPreview ||
                           getImageUrl(
                             editingId
-                              ? products.find((p) => p.id === editingId)?.image || ""
-                              : ""
+                              ? products.find((p) => p.id === editingId)
+                                  ?.image || ""
+                              : "",
                           )
                         }
                         alt="Product preview"
@@ -1284,7 +1521,6 @@ export default function ProductsAdminPage() {
 
                 {/* FORM SECTION */}
                 <div className="bg-white rounded-2xl border shadow-sm p-5 space-y-5">
-
                   <div>
                     <Label>Product Name *</Label>
                     <Input
@@ -1307,7 +1543,8 @@ export default function ProductsAdminPage() {
 
                   <div>
                     <Label>
-                      Ingredients <span className="text-gray-400">( | separator )</span>
+                      Ingredients{" "}
+                      <span className="text-gray-400">( | separator )</span>
                     </Label>
                     <Textarea
                       name="ingredients"
@@ -1319,7 +1556,6 @@ export default function ProductsAdminPage() {
 
                   {/* GRID */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
                     <div>
                       <Label>Price (₱) *</Label>
                       <Input
@@ -1335,7 +1571,10 @@ export default function ProductsAdminPage() {
                       <Select
                         value={editFormData.category}
                         onValueChange={(value) =>
-                          setEditFormData((prev) => ({ ...prev, category: value }))
+                          setEditFormData((prev) => ({
+                            ...prev,
+                            category: value,
+                          }))
                         }
                       >
                         <SelectTrigger className="mt-1">
@@ -1354,11 +1593,12 @@ export default function ProductsAdminPage() {
 
                   {/* TOGGLES */}
                   <div className="flex flex-col gap-4 pt-2">
-
                     <div className="flex items-center justify-between border rounded-xl p-3">
                       <div>
                         <p className="font-medium">Best Seller</p>
-                        <p className="text-xs text-gray-500">Mark as featured item</p>
+                        <p className="text-xs text-gray-500">
+                          Mark as featured item
+                        </p>
                       </div>
                       <Switch
                         checked={editFormData.best_seller}
@@ -1371,13 +1611,13 @@ export default function ProductsAdminPage() {
                     <div className="flex items-center justify-between border rounded-xl p-3">
                       <div>
                         <p className="font-medium">Set Item</p>
-                        <p className="text-xs text-gray-500">Mark as bundle/set</p>
+                        <p className="text-xs text-gray-500">
+                          Mark as bundle/set
+                        </p>
                       </div>
                       <Switch
                         checked={editFormData.set}
-                        onCheckedChange={(v) =>
-                          handleEditSwitch("set", v)
-                        }
+                        onCheckedChange={(v) => handleEditSwitch("set", v)}
                       />
                     </div>
                   </div>
@@ -1401,12 +1641,11 @@ export default function ProductsAdminPage() {
                     Save Changes
                   </Button>
                 </div>
-
               </div>
             </SheetContent>
           </Sheet>
         </div>
-      </div >
-    </SidebarProvider >
+      </div>
+    </SidebarProvider>
   )
 }

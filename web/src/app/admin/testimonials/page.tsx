@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from "@/components/ui/label"
 import { Playfair_Display } from "next/font/google"
 import { useAdminRoute } from "@/hooks/use-protected-route"
+import logo from '@/assets/logo.jpg'
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -253,7 +254,7 @@ export default function TestimonialsAdmin() {
           {isDesktop && (
             <div className="sticky top-0 z-50 flex h-14 items-center gap-3 border-b bg-[#162A3A] px-4 shadow-sm">
               <SidebarTrigger className="-ml-1" />
-              <Image src="/logo.jpg" alt="Maison Plate Logo" width={40} height={40} className="object-contain rounded-full" />
+              <Image src={logo} alt="Maison Plate Logo" width={40} height={40} className="object-contain rounded-full" />
               <h1 className={`${playfair.className} text-lg font-semibold text-white`}>Maison Plate</h1>
             </div>
           )}

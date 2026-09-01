@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import logo from '@/assets/logo.jpg'
 import {
   MoreHorizontal,
   Eye,
@@ -658,7 +659,7 @@ export default function UsersAdminPage() {
           {isDesktop && (
             <div className="sticky top-0 z-50 flex h-14 items-center gap-3 border-b bg-[#162A3A] px-4 shadow-sm">
               <SidebarTrigger className="-ml-1" />
-              <Image src="/logo.jpg" alt="Maison Plate Logo" width={40} height={40} className="object-contain rounded-full" />
+              <Image src={logo} alt="Maison Plate Logo" width={40} height={40} className="object-contain rounded-full" />
               <h1 className={`${playfair.className} text-lg font-semibold text-white`}>Maison Plate</h1>
             </div>
           )}

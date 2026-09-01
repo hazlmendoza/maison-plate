@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import heroImage from "@/assets/hero-coffee.jpg"
+import heroImage from "@/assets/hero-dining-room.png"
 import { Playfair_Display } from "next/font/google"
-import LumeLoaderMinimal from "@/components/oppa-loader"
+import Loading from "@/components/loading"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -15,15 +15,15 @@ const playfair = Playfair_Display({
 const values = [
   {
     title: "Sourced with Care",
-    desc: "We partner with small-batch farms across Ethiopia, Colombia, and Guatemala to bring you beans that are ethically sourced and impeccably roasted.",
+    desc: "We work directly with local farms, butchers, and fishmongers across Mindanao to bring you ingredients that are honestly sourced and simply prepared.",
   },
   {
-    title: "Crafted by Hand",
-    desc: "Every cup is brewed with precision. From pour-over to espresso, our baristas are trained to bring out the best in every bean.",
+    title: "Cooked Over Fire",
+    desc: "Every plate passes through our open wood-fired kitchen. No shortcuts, no heat lamps — just live fire, cast iron, and a chef who's watching it.",
   },
   {
-    title: "A Space to Linger",
-    desc: "Crescent isn't just a coffee shop — it's a retreat. A place to slow down, reconnect, and savor the moment.",
+    title: "A Room Built to Linger",
+    desc: "Maison Plate isn't just a dining room — it's reclaimed steel, aged oak, and low light built for long dinners and slow conversation.",
   },
 ]
 
@@ -39,11 +39,13 @@ const About = () => {
   }, [])
 
   if (loading) {
-    return <LumeLoaderMinimal />
+    return <Loading />
   }
 
   return (
-    <div className="min-h-screen bg-[#0f2a33] text-white">
+    // `dark` forced so this page stays the same blackened-steel/copper room
+    // as the rest of the site, regardless of the theme toggle.
+    <div className="dark min-h-screen bg-background text-foreground">
 
       {/* Hero */}
       <section className="relative h-[55vh] flex items-center justify-center overflow-hidden">
@@ -51,14 +53,14 @@ const About = () => {
         {/* Image */}
         <Image
           src={heroImage}
-          alt="Coffee shop"
+          alt="Maison Plate dining room"
           fill
           priority
           className="object-cover scale-105"
         />
 
         {/* Overlay (dark + gradient fade bottom) */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0f2a33]/70 via-[#0f2a33]/60 to-[#0f2a33]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/60 to-background" />
 
         {/* Title */}
         <div className="relative z-10 text-center px-4">
@@ -67,11 +69,11 @@ const About = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-center font-heading"
           >
-            <p className=" text-[#d4a24c] tracking-[0.3em] uppercase text-sm mb-3">
+            <p className="text-accent tracking-[0.3em] uppercase text-sm mb-3">
               Maison Plate
             </p>
             <h1 className={`${playfair.className} font-heading text-6xl font-bold`}>
-              Our <span className=" text-[#d4a24c] italic">Story</span>
+              Our <span className="text-accent italic">Story</span>
             </h1>
           </motion.h1>
         </div>
@@ -87,29 +89,34 @@ const About = () => {
             viewport={{ once: true }}
           >
             {/* EST */}
-            <p className="text-[#d4a24c] tracking-[0.35em] uppercase text-xs mb-6">
+            <p className="text-accent tracking-[0.35em] uppercase text-xs mb-6">
               EST. 2018
             </p>
 
             {/* Title */}
             <h2 className={`${playfair.className} font-heading text-4xl md:text-5xl font-semibold mb-8`}>
-              Born from a Love of Coffee
+              Built Around an Open Flame
             </h2>
 
             {/* Paragraph */}
-            <p className="text-white/70 text-lg leading-relaxed mb-6">
-              Crescent began with a simple belief: that a great cup of coffee can transform your entire day. What started as a tiny corner café has grown into a beloved neighborhood gathering place — where mornings smell of fresh roasts and evenings glow with warm conversation.
+            <p className="text-foreground/70 text-lg leading-relaxed mb-6">
+              Maison Plate began with a simple belief: that food cooked over live fire, in a room built
+              from honest materials, doesn&apos;t need much dressing up. What started as a single
+              wood-fired hearth has grown into a full dining room — reclaimed steel beams, aged oak
+              tables, and a kitchen you can watch from your seat.
             </p>
 
-            <p className="text-white/70 text-lg leading-relaxed">
-              Our founder, inspired by the crescent moon&apos;s quiet beauty, envisioned a space that blends artisan coffee culture with the warmth of a neighborhood bar. Today, Crescent is where strangers become regulars, and regulars become family.
+            <p className="text-foreground/70 text-lg leading-relaxed">
+              Our founders wanted a place that felt more like a workshop than a restaurant — where the
+              tools of the trade are part of the room, not hidden in the back. Today, Maison Plate is
+              where regulars come for the fire as much as the food.
             </p>
           </motion.div>
         </div>
       </section>
 
       {/* Values */}
-      <section className="py-24 bg-[#0b1d26]">
+      <section className="py-24 bg-secondary/30">
         <div className="max-w-5xl mx-auto px-6">
 
           <motion.div
@@ -117,7 +124,7 @@ const About = () => {
             whileInView={{ opacity: 1, y: 0 }}
             className="text-center mb-16"
           >
-            <p className="text-[#d4a24c] tracking-[0.35em] uppercase text-xs mb-3">
+            <p className="text-accent tracking-[0.35em] uppercase text-xs mb-3">
               What Drives Us
             </p>
 
@@ -133,13 +140,13 @@ const About = () => {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.15 }}
-                className="bg-[#0c222b]/10 rounded-2xl p-8 border border-[#a47015]/60 text-center hover:border-[#d4a24c]/40 transition shadow-[0_0_20px_rgba(212,162,76,0.35)]"
+                className="bg-card rounded-sm p-8 border border-accent/30 text-center hover:border-accent/60 hover:shadow-lg hover:shadow-accent/20 transition"
               >
-                <h3 className={`${playfair.className} font-heading text-2xl font-semibold mb-3`}>
+                <h3 className={`${playfair.className} font-heading text-2xl font-semibold text-foreground mb-3`}>
                   {v.title}
                 </h3>
 
-                <p className="text-white/60 text-sm leading-relaxed">
+                <p className="text-foreground/60 text-sm leading-relaxed">
                   {v.desc}
                 </p>
               </motion.div>

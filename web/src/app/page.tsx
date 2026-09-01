@@ -7,9 +7,9 @@ import OfferSection from "@/components/sections/OfferSection"
 import CTASection from "@/components/sections/CTASection"
 import FeaturedMenu from "@/components/sections/FeaturedMenu"
 import TestimonialsSection from "@/components/sections/testimonials"
-import LumeLoaderMinimal from "@/components/oppa-loader"
 import BlogPreview from "@/components/sections/BlogPreview"
 import AnnouncementsSection from "@/components/sections/Announcements"
+import Loading from "@/components/loading"
 
 export default function Home() {
   const [loading, setLoading] = useState(true)
@@ -23,9 +23,7 @@ export default function Home() {
   }, [])
 
   if (loading) {
-    return (
-      <div>Loading</div>
-    )
+    return <Loading />
   }
 
   return (

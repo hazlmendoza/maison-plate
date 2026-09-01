@@ -63,15 +63,20 @@ export default function Cart() {
   /* ================= EMPTY ================= */
   if (items.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b1d26] text-white px-4">
-        <div className="text-center max-w-md bg-[#0f2a33] p-10 rounded-2xl border border-[#d4a24c]/30 shadow-xl">
-          <ShoppingBag className="w-20 h-20 mx-auto text-[#d4a24c] mb-6" />
+      // `dark` forced so this page stays the same blackened-steel/copper
+      // room as the rest of the site, regardless of the theme toggle.
+      <div className="dark min-h-screen flex items-center justify-center bg-background text-foreground px-4">
+        <div className="text-center max-w-md bg-card p-10 rounded-sm border border-accent/30 shadow-xl">
+          <ShoppingBag className="w-20 h-20 mx-auto text-accent mb-6" />
           <h1 className="text-2xl font-bold mb-3">Your Cart is Empty</h1>
-          <p className="text-white/60 mb-6">
+          <p className="text-foreground/60 mb-6">
             Start adding delicious items from our menu 🍽️
           </p>
 
-          <Button asChild className="bg-[#d4a24c] text-black rounded-full px-6">
+          <Button
+            asChild
+            className="bg-accent hover:bg-accent/85 text-accent-foreground rounded-sm px-6"
+          >
             <Link href="/menu">Browse Menu</Link>
           </Button>
         </div>
@@ -81,13 +86,13 @@ export default function Cart() {
 
   /* ================= MAIN ================= */
   return (
-    <div className="min-h-screen py-24 bg-[#0b1d26] text-white">
+    // `dark` forced so this page stays the same blackened-steel/copper
+    // room as the rest of the site, regardless of the theme toggle.
+    <div className="dark min-h-screen py-24 bg-background text-foreground">
       <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row gap-8">
-
           {/* LEFT */}
           <div className="flex-1">
-
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-2xl md:text-3xl font-bold">
@@ -97,7 +102,7 @@ export default function Cart() {
               <Button
                 variant="outline"
                 onClick={handleClear}
-                className="bg-[#d4a24c] hover:bg-[#d4a24c]/60 text-gray-900 border-none"
+                className="rounded-sm border-destructive/40 text-destructive hover:bg-destructive/10 hover:border-destructive/60"
               >
                 Clear
               </Button>
@@ -112,15 +117,13 @@ export default function Cart() {
                 return (
                   <Card
                     key={item.id}
-                    className="bg-[#0f2a33] border-white/10 rounded-xl"
+                    className="bg-card border-border rounded-sm"
                   >
                     <CardContent className="p-5 flex flex-col md:flex-row gap-5">
-
                       {/* LEFT - IMAGE + BASIC INFO */}
                       <div className="flex gap-4 w-full md:w-auto">
-
                         {/* IMAGE */}
-                        <div className="relative w-28 h-28 md:w-32 md:h-32 rounded-xl overflow-hidden flex-shrink-0">
+                        <div className="relative w-28 h-28 md:w-32 md:h-32 rounded-sm overflow-hidden flex-shrink-0">
                           <Image
                             src={getImageUrl(item.image)}
                             alt={item.name}
@@ -131,19 +134,19 @@ export default function Cart() {
 
                         {/* NAME + DESCRIPTION */}
                         <div className="flex flex-col justify-center">
-                          <h3 className="font-bold text-2xl text-gray-200">
+                          <h3 className="font-bold text-2xl text-foreground">
                             {item.name}
                           </h3>
 
-                          <p className="text-sm text-white/60 line-clamp-2 max-w-xs">
+                          <p className="text-sm text-foreground/60 line-clamp-2 max-w-xs">
                             {item.description}
                           </p>
 
-                          <Badge className="my-2 w-fit text-xs px-3 py-1 rounded-full bg-[#d4a24c]/20 text-[#d4a24c]">
+                          <Badge className="my-2 w-fit text-xs px-3 py-1 rounded-sm bg-accent/20 text-accent">
                             {item.category}
                           </Badge>
 
-                          <p className="my-2 text-sm text-gray-400">
+                          <p className="my-2 text-sm text-foreground/50">
                             ₱{formatPrice(price)}
                           </p>
                         </div>
@@ -151,12 +154,11 @@ export default function Cart() {
 
                       {/* RIGHT - ACTIONS */}
                       <div className="flex flex-col justify-between ml-auto w-full md:w-auto gap-4">
-
                         {/* REMOVE BUTTON */}
                         <div className="flex justify-end">
                           <button
                             onClick={() => handleRemove(item.id, item.name)}
-                            className="text-white/40 hover:text-red-400 transition"
+                            className="text-foreground/40 hover:text-destructive transition"
                           >
                             <X size={18} />
                           </button>
@@ -164,19 +166,18 @@ export default function Cart() {
 
                         {/* QUANTITY + PRICE */}
                         <div className="flex items-center justify-between md:justify-end gap-6">
-
                           {/* QTY */}
-                          <div className="flex items-center bg-white/10 rounded-full px-2">
+                          <div className="flex items-center bg-foreground/10 rounded-sm px-2">
                             <button
                               onClick={() =>
                                 handleQuantityChange(item.id, item.quantity - 1)
                               }
-                              className="p-1 hover:text-[#d4a24c]"
+                              className="p-1 hover:text-accent"
                             >
                               <Minus size={18} />
                             </button>
 
-                            <span className="px-3 text-white font-medium">
+                            <span className="px-3 text-foreground font-medium">
                               {item.quantity}
                             </span>
 
@@ -184,7 +185,7 @@ export default function Cart() {
                               onClick={() =>
                                 handleQuantityChange(item.id, item.quantity + 1)
                               }
-                              className="p-1 hover:text-[#d4a24c]"
+                              className="p-1 hover:text-accent"
                             >
                               <Plus size={18} />
                             </button>
@@ -192,16 +193,13 @@ export default function Cart() {
 
                           {/* PRICE */}
                           <div className="text-right min-w-[100px]">
-                            <p className="text-xl font-bold text-gray-200">
+                            <p className="text-xl font-bold text-foreground">
                               ₱{formatPrice(subtotal)}
                             </p>
                           </div>
-
                         </div>
                       </div>
-
                     </CardContent>
-
                   </Card>
                 )
               })}
@@ -210,10 +208,9 @@ export default function Cart() {
 
           {/* RIGHT */}
           <div className="lg:w-96">
-            <Card className="sticky top-24 bg-[#0f2a33] border border-[#d4a24c]/30 rounded-2xl">
+            <Card className="sticky top-24 bg-card border border-accent/30 rounded-sm">
               <CardContent className="p-6 space-y-4">
-
-                <h2 className="text-2xl font-bold text-[#d4a24c]">
+                <h2 className="text-2xl font-bold text-accent">
                   Order Summary
                 </h2>
 
@@ -226,11 +223,9 @@ export default function Cart() {
                     return (
                       <div
                         key={item.id}
-                        className="grid grid-cols-3 text-md text-white/70"
+                        className="grid grid-cols-3 text-md text-foreground/70"
                       >
-                        <span>
-                          {item.name}
-                        </span>
+                        <span>{item.name}</span>
                         <span className="flex justify-center items-center">
                           x{item.quantity}
                         </span>
@@ -243,10 +238,10 @@ export default function Cart() {
                 </div>
 
                 {/* Divider */}
-                <div className="h-[1px] bg-white/10" />
+                <div className="h-[1px] bg-border" />
 
                 {/* Total */}
-                <div className="flex justify-between font-semibold text-lg text-white">
+                <div className="flex justify-between font-semibold text-lg text-foreground">
                   <span>Total</span>
                   <span>₱{formatPrice(total)}</span>
                 </div>
@@ -254,7 +249,7 @@ export default function Cart() {
                 {/* Buttons */}
                 <Button
                   asChild
-                  className="w-full bg-[#d4a24c] hover:bg-[#d4a24c]/80 text-black rounded-full"
+                  className="w-full bg-accent hover:bg-accent/85 text-accent-foreground rounded-sm"
                 >
                   <Link href="/checkout">Checkout</Link>
                 </Button>

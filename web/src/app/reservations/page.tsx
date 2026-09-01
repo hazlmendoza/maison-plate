@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog"
-import LumeLoaderMinimal from "@/components/oppa-loader"
+import Loading from "@/components/loading"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -495,7 +495,7 @@ export default function ReservationsPage() {
     }))
   }, [computedReservationFee])
 
-  if (loading) return <LumeLoaderMinimal />
+  if (loading) return <Loading />
 
   return (
     <div className="relative py-28 bg-[#0b1d26] min-h-screen overflow-hidden">

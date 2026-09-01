@@ -6,12 +6,17 @@ import { motion } from "framer-motion"
 import { Playfair_Display } from "next/font/google"
 import { toast } from "@/hooks/use-toast"
 import { useCartStore } from "@/store/cartStore"
-import LumeLoaderMinimal from "@/components/oppa-loader"
 import Image from "next/image"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Star, X, Coffee } from "lucide-react"
+import { Star } from "lucide-react"
 import { useAuthStore } from "@/store/authStore"
+import Loading from "@/components/loading"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -30,20 +35,26 @@ interface Product {
   set?: boolean
 }
 
+const mainCategoryMap: Record<string, string[]> = {
+  Signature: ["Signature"],
+  Classics: ["Classics"],
+  Drinks: ["Drinks"],
+  Refreshers: ["Refreshers"],
+  Food: ["Food"],
+  Desserts: ["Desserts"],
+}
+
 export default function MenuPage() {
   const router = useRouter()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeMainCategory, setActiveMainCategory] = useState<"Signature" | "Classics" | "Drinks" | "Coffee" | "Refreshers" | "Food" | "Drinks">(
-    "Signature",
-  )
+  const [activeMainCategory, setActiveMainCategory] =
+    useState<keyof typeof mainCategoryMap>("Signature")
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
 
   const { addItem } = useCartStore()
   const { user } = useAuthStore()
-
-
 
   const fetchProducts = async () => {
     try {
@@ -83,7 +94,9 @@ export default function MenuPage() {
   }
 
   const filteredProducts = products.filter((item) =>
-    mainCategoryMap[activeMainCategory].map((c) => c.toLowerCase()).includes(item.category.toLowerCase()),
+    mainCategoryMap[activeMainCategory]
+      .map((c) => c.toLowerCase())
+      .includes(item.category.toLowerCase()),
   )
 
   const groupedProducts = filteredProducts.reduce(
@@ -132,14 +145,16 @@ export default function MenuPage() {
     }))
   }, [])
 
-  if (loading) return <LumeLoaderMinimal />
+  if (loading) return <Loading />
 
   return (
-    <section className="relative py-28 bg-[#0b1d26] min-h-screen overflow-hidden">
+    // `dark` forced so this page stays the same blackened-steel/copper room
+    // as the rest of the site, regardless of the theme toggle.
+    <section className="dark relative py-28 bg-background min-h-screen overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
-        {/* Glow layer */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(212,162,76,0.08),transparent_40%)]" />
+        {/* Glow layer — tinted with the copper accent */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(176,116,68,0.08),transparent_40%)]" />
         <svg width="100%" height="100%">
           {stars.map((star) => (
             <circle
@@ -147,13 +162,16 @@ export default function MenuPage() {
               cx={`${star.cx}%`}
               cy={`${star.cy}%`}
               r={star.r}
-              fill="hsl(40, 80%, 75%)"
+              fill="hsl(35, 55%, 68%)"
               className="animate-twinkle"
               style={{
                 animationDuration: `${star.duration}s`,
                 animationDelay: `${star.delay}s`,
                 opacity: star.opacity,
-                filter: star.r > 2.5 ? "drop-shadow(0 0 6px rgba(212,162,76,0.4))" : "none",
+                filter:
+                  star.r > 2.5
+                    ? "drop-shadow(0 0 6px rgba(176,116,68,0.4))"
+                    : "none",
               }}
             />
           ))}
@@ -162,10 +180,18 @@ export default function MenuPage() {
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
         {/* Heading */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8 md:mb-16">
-          <p className="tracking-[0.2em] md:tracking-[0.3em] uppercase text-xs md:text-sm mb-2 md:mb-3 text-[#d4a24c]">Our Offerings</p>
-          <h2 className={`${playfair.className} text-3xl md:text-5xl lg:text-6xl font-bold leading-tight`}>
-            The <span className="text-[#d4a24c] italic">Menu</span>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-8 md:mb-16"
+        >
+          <p className="tracking-[0.2em] md:tracking-[0.3em] uppercase text-xs md:text-sm mb-2 md:mb-3 text-accent">
+            Our Offerings
+          </p>
+          <h2
+            className={`${playfair.className} text-3xl md:text-5xl lg:text-6xl font-bold leading-tight text-foreground`}
+          >
+            The <span className="text-accent italic">Menu</span>
           </h2>
         </motion.div>
 
@@ -177,12 +203,14 @@ export default function MenuPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.08 }}
-              onClick={() => setActiveMainCategory(cat as keyof typeof mainCategoryMap)}
-              className={`px-4 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3  rounded-full text-xs sm:text-sm font-medium transition-all duration-300 shadow-lg whitespace-nowrap
+              onClick={() =>
+                setActiveMainCategory(cat as keyof typeof mainCategoryMap)
+              }
+              className={`px-4 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 rounded-sm text-xs sm:text-sm font-medium transition-all duration-300 shadow-lg whitespace-nowrap
                 ${
                   activeMainCategory === cat
-                    ? "bg-gradient-to-r from-[#d4a24c] to-[#b8943a] text-black font-semibold shadow-[#d4a24c]/30"
-                    : "bg-[#132e3b]/80 backdrop-blur-sm text-white/70 hover:bg-[#193847] hover:text-white border border-white/10 hover:border-[#d4a24c]/30"
+                    ? "bg-accent text-accent-foreground font-semibold shadow-accent/30"
+                    : "bg-card/80 backdrop-blur-sm text-foreground/70 hover:bg-secondary hover:text-foreground border border-border hover:border-accent/30"
                 }
                 `}
             >
@@ -193,7 +221,12 @@ export default function MenuPage() {
 
         {/* CONTENT */}
         {Object.entries(groupedProducts).map(([category, items]) => (
-          <motion.div key={category} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
+          <motion.div
+            key={category}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-12"
+          >
             <div className="grid md:grid-cols-2 gap-x-16 gap-y-8">
               {items.map((item, index) => (
                 <motion.div
@@ -205,77 +238,76 @@ export default function MenuPage() {
                   onClick={() => handleProductClick(item)}
                 >
                   <div
-                    className="group cursor-pointer rounded-2xl bg-white/5 backdrop-blur-md border border-white/10
-                            hover:border-[#d4a24c]/30 hover:bg-white/10 transition-all duration-300
-                              hover:shadow-lg hover:shadow-[#d4a24c]/10 overflow-hidden"
+                    className="
+              rounded-sm bg-foreground/5 backdrop-blur-md
+              border border-foreground/10
+              hover:border-accent/30 hover:bg-foreground/10
+              transition-all duration-300
+              hover:shadow-lg hover:shadow-accent/10
+              overflow-hidden
+            "
                   >
-                    <div className="p-5 flex gap-5" onClick={() => handleProductClick(item)}>
-                      {/* IMAGE */}
-                      <div className="relative w-28 h-28 md:w-32 md:h-32 flex-shrink-0 rounded-xl overflow-hidden">
-                        <Image
-                          src={getImageUrl(item.image)}
-                          alt={item.name}
-                          fill
-                          className="object-contain group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-
-                      {/* CONTENT */}
-                      <div className="flex-1 flex flex-col justify-between">
-                        {/* TITLE + BADGE */}
-                        <div>
-                          <div className="flex items-start justify-between gap-3">
-                            <h4 className={`${playfair.className} text-xl font-semibold group-hover:text-[#d4a24c] transition-colors`}>
-                              {item.name}
-                            </h4>
-
-                            {item.best_seller && (
-                              <span className="flex items-center gap-1 text-[#d4a24c] text-xs font-medium">
-                                <Star className="w-4 h-4" />
-                                Best Seller
-                              </span>
-                            )}
-
-                            {Boolean(item.set) && (
-                              <span className="text-xs px-2 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30">Set</span>
-                            )}
-                          </div>
-
-                          <p className="text-sm text-white/60 mt-2 line-clamp-2">{item.description}</p>
-                        </div>
-
-                        {/* PRICE + BUTTON */}
-                        <div className="flex items-center justify-between mt-4">
-                          <span className="text-[#d4a24c] font-bold text-lg">₱{item.price}</span>
-
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleAddToCart(item)
-                            }}
-                            className="px-4 py-2 rounded-full bg-[#d4a24c] text-black text-xs font-semibold
-                                    hover:bg-[#b8943a] transition"
-                          >
-                            + Add
-                          </button>
-                        </div>
-                      </div>
+                    {/* IMAGE */}
+                    <div className="relative w-full aspect-square overflow-hidden">
+                      <Image
+                        src={getImageUrl(item.image)}
+                        alt={item.name}
+                        fill
+                        className="object-contain p-6 group-hover:scale-105 transition-transform duration-300"
+                      />
                     </div>
 
-                    {/* INGREDIENTS */}
-                    <div className="px-5 pb-5 pt-3 border-t border-white/10">
-                      <div className="flex gap-2">
-                        {item.ingredients && (
-                          <div className="px-5 py-3">
-                            <div className="flex flex-wrap gap-2">
-                              {item.ingredients.split("|").map((ing, i) => (
-                                <span key={i} className="text-[11px] px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/60">
-                                  {ing.trim()}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
+                    {/* CONTENT */}
+                    <div className="p-5">
+                      {/* TITLE + BADGES */}
+                      <div className="flex items-start justify-between gap-3">
+                        <h4
+                          className={`${playfair.className} text-xl md:text-2xl font-semibold text-foreground group-hover:text-accent transition-colors`}
+                        >
+                          {item.name}
+                        </h4>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          {item.best_seller && (
+                            <span className="flex items-center gap-1 text-accent text-xs font-medium">
+                              <Star className="w-4 h-4" />
+                              Best Seller
+                            </span>
+                          )}
+
+                          {Boolean(item.set) && (
+                            <span className="text-xs px-2 py-1 rounded-sm bg-[var(--chart-4)]/15 text-[var(--chart-4)] border border-[var(--chart-4)]/30">
+                              Set
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* DESCRIPTION */}
+                      <p className="text-sm text-foreground/60 mt-3 line-clamp-2">
+                        {item.description}
+                      </p>
+
+                      {/* PRICE + BUTTON */}
+                      <div className="flex items-center justify-between mt-5">
+                        <span className="text-accent font-bold text-lg">
+                          ₱{item.price}
+                        </span>
+
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleAddToCart(item)
+                          }}
+                          className="
+                    px-4 py-2 rounded-sm
+                    bg-accent text-accent-foreground
+                    text-xs font-semibold
+                    hover:bg-accent/85 transition
+                  "
+                        >
+                          + Add
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -288,29 +320,39 @@ export default function MenuPage() {
         {/* EMPTY STATE */}
         {filteredProducts.length === 0 && (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="w-20 h-20 rounded-full bg-[#d4a24c]/10 flex items-center justify-center mb-6">
-              <span className="text-3xl">🍽️</span>
-            </div>
+            <div className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mb-6"></div>
 
-            <h3 className={`${playfair.className} text-2xl font-semibold mb-2`}>No Dishes Available</h3>
+            <h3 className={`${playfair.className} text-2xl font-semibold mb-2`}>
+              No Dishes Available
+            </h3>
 
-            <p className="text-white/60 max-w-md">This category is currently being curated by our chefs. Please check back soon for new offerings.</p>
+            <p className="text-foreground/60 max-w-md">
+              This category is currently being curated by our chefs. Please
+              check back soon for new offerings.
+            </p>
 
-            <div className="mt-6 h-[1px] w-24 bg-[#d4a24c]/30" />
+            <div className="mt-6 h-[1px] w-24 bg-accent/30" />
           </div>
         )}
 
         {/* Product Detail Dialog */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="max-w-3xl bg-[#0b1d26] border border-white/10 text-white rounded-2xl overflow-hidden p-0">
+          <DialogContent className="max-w-3xl bg-card border border-border text-foreground rounded-sm overflow-hidden p-0">
             {/* IMAGE HEADER */}
             <div className="relative w-full h-72">
-              <Image src={getImageUrl(selectedProduct?.image)} alt={selectedProduct?.name || ""} fill className="object-contain" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0b1d26] via-black/40 to-transparent" />
+              <Image
+                src={getImageUrl(selectedProduct?.image)}
+                alt={selectedProduct?.name || ""}
+                fill
+                className="object-contain"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-card via-background/40 to-transparent" />
 
               {/* BADGE */}
               {selectedProduct?.best_seller && (
-                <div className="absolute top-4 left-4 bg-[#d4a24c] text-black px-3 py-1 rounded-full text-xs font-semibold">⭐ Best Seller</div>
+                <div className="absolute top-4 left-4 bg-accent text-accent-foreground px-3 py-1 rounded-sm text-xs font-semibold">
+                  ⭐ Best Seller
+                </div>
               )}
             </div>
 
@@ -318,21 +360,34 @@ export default function MenuPage() {
             <div className="p-6 space-y-5">
               {/* TITLE + PRICE */}
               <div className="flex items-start justify-between gap-4">
-                <DialogTitle className={`${playfair.className} text-2xl md:text-3xl font-bold text-[#d4a24c]`}>{selectedProduct?.name}</DialogTitle>
+                <DialogTitle
+                  className={`${playfair.className} text-2xl md:text-3xl font-bold text-accent`}
+                >
+                  {selectedProduct?.name}
+                </DialogTitle>
 
-                <div className="text-xl font-bold text-white">₱{selectedProduct?.price}</div>
+                <div className="text-xl font-bold text-foreground">
+                  ₱{selectedProduct?.price}
+                </div>
               </div>
 
               {/* DESCRIPTION */}
-              <div className="text-white/70 text-sm leading-relaxed">{selectedProduct?.description}</div>
+              <div className="text-foreground/70 text-sm leading-relaxed">
+                {selectedProduct?.description}
+              </div>
 
               {/* INGREDIENTS */}
               <div>
-                <p className="text-xs uppercase tracking-widest text-white/40 mb-2">Ingredients</p>
+                <p className="text-xs uppercase tracking-widest text-foreground/40 mb-2">
+                  Ingredients
+                </p>
                 <div className="px-5 py-3">
                   <div className="flex flex-wrap gap-2">
                     {selectedProduct?.ingredients?.split("|").map((ing, i) => (
-                      <span key={i} className="text-[11px] px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/60">
+                      <span
+                        key={i}
+                        className="text-[11px] px-3 py-1 rounded-sm bg-foreground/5 border border-foreground/10 text-foreground/60"
+                      >
                         {ing.trim()}
                       </span>
                     ))}
@@ -347,7 +402,7 @@ export default function MenuPage() {
                     handleAddToCart(selectedProduct!)
                     setDialogOpen(false)
                   }}
-                  className="w-full bg-[#d4a24c] hover:bg-[#b8943a] text-black font-semibold py-3 rounded-xl"
+                  className="w-full bg-accent hover:bg-accent/85 text-accent-foreground font-semibold py-3 rounded-sm"
                 >
                   Add to Cart
                 </Button>

@@ -8,18 +8,26 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
-import OppaLoader from "@/components/oppa-loader"
 import { usePathname } from "next/navigation"
 import FloatingSocialMedia from "@/components/FloatingSocialMedia"
 import CustomerServiceChatbot from "@/components/CustomerServiceChatbot"
 import { useAuthStore } from "@/store/authStore"
 import { useSettingsStore } from "@/store/settingsStore"
+import Loading from "@/components/loading"
 
 const queryClient = new QueryClient()
 
-export default function ClientLayout({ children }: { children: React.ReactNode }) {
+export default function ClientLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const pathname = usePathname()
-  const showHeader = pathname !== "/login" && pathname !== "/register" && pathname !== "/admin" && !pathname.startsWith("/admin/")
+  const showHeader =
+    pathname !== "/login" &&
+    pathname !== "/register" &&
+    pathname !== "/admin" &&
+    !pathname.startsWith("/admin/")
   const { fetchSettings } = useSettingsStore()
 
   useEffect(() => {
@@ -35,7 +43,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
   return (
     <>
-      <OppaLoader />
+      <Loading />
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <div className="min-h-screen flex flex-col">
@@ -43,8 +51,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
             <main className="flex-1">{children}</main>
             {showHeader && <Footer />}
           </div>
-          {showHeader && <FloatingSocialMedia />}
-          {showHeader && <CustomerServiceChatbot />}
           <Toaster />
           <SonnerToaster />
         </TooltipProvider>

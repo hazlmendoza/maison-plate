@@ -88,7 +88,8 @@ export default function LoginPage() {
     } catch (error) {
       console.error("Login error:", error)
       toast.error("Connection Error", {
-        description: "Unable to login. Please check your connection and try again.",
+        description:
+          "Unable to login. Please check your connection and try again.",
       })
     } finally {
       setIsSubmitting(false)
@@ -97,19 +98,20 @@ export default function LoginPage() {
 
   return (
     <>
-      <div className="min-h-screen bg-[#0b1d26] flex items-center justify-center px-4">
-
+      {/* `dark` forced so this page stays the same blackened-steel/copper
+          room as the rest of the site, regardless of the theme toggle. */}
+      <div className="dark min-h-screen bg-background flex items-center justify-center px-4">
         {/* Background glow */}
         <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-20 left-10 w-40 h-40 bg-[#d4a24c]/10 blur-3xl rounded-full" />
-          <div className="absolute bottom-20 right-10 w-40 h-40 bg-[#d4a24c]/10 blur-3xl rounded-full" />
+          <div className="absolute top-20 left-10 w-40 h-40 bg-accent/10 blur-3xl rounded-full" />
+          <div className="absolute bottom-20 right-10 w-40 h-40 bg-accent/10 blur-3xl rounded-full" />
         </div>
 
-        {/* Steam overlay */}
+        {/* Ember drift */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           {[...Array(6)].map((_, i) => (
             <motion.div
-              key={`steam1-${i}`}
+              key={`ember1-${i}`}
               initial={{ y: 100, opacity: 0 }}
               animate={{
                 y: -800,
@@ -122,7 +124,7 @@ export default function LoginPage() {
                 delay: i * 0.8,
                 ease: "easeInOut",
               }}
-              className="absolute bottom-0 w-32 h-32 bg-white/40 rounded-full blur-2xl"
+              className="absolute bottom-0 w-32 h-32 bg-accent/20 rounded-full blur-2xl"
               style={{ left: `${10 + i * 15}%` }}
             />
           ))}
@@ -131,7 +133,7 @@ export default function LoginPage() {
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           {[...Array(6)].map((_, i) => (
             <motion.div
-              key={`steam2-${i}`}
+              key={`ember2-${i}`}
               initial={{ y: 100, opacity: 0 }}
               animate={{
                 y: -500,
@@ -144,7 +146,7 @@ export default function LoginPage() {
                 delay: i * 0.6,
                 ease: "easeInOut",
               }}
-              className="absolute bottom-0 w-28 h-28 bg-white/70 rounded-full blur-2xl"
+              className="absolute bottom-0 w-28 h-28 bg-foreground/10 rounded-full blur-2xl"
               style={{ left: `${5 + i * 15}%` }}
             />
           ))}
@@ -152,28 +154,30 @@ export default function LoginPage() {
 
         {/* Card */}
         <div className="relative w-full max-w-md">
-          <div className="bg-[#0f2a33] border border-[#d4a24c]/30 rounded-2xl p-8 shadow-[0_0_30px_rgba(212,162,76,0.25)] backdrop-blur">
-
+          <div className="bg-card border border-accent/30 rounded-sm p-8 shadow-2xl backdrop-blur">
             {/* Back Button */}
             <button
               onClick={() => router.back()}
-              className="flex items-center gap-2 text-white/60 hover:text-white/80 transition"
+              className="flex items-center gap-2 text-foreground/60 hover:text-foreground/80 transition"
             >
               <ArrowLeftCircle className="w-6 h-6" />
             </button>
 
             {/* Header */}
             <div className="text-center mb-8">
-              <h1 className={`text-3xl font-bold text-white ${playfair.className}`}>Welcome Back!</h1>
-              <p className="text-[#d4a24c] mt-1 tracking-wide">Maison Plate</p>
+              <h1
+                className={`text-3xl font-bold text-foreground ${playfair.className}`}
+              >
+                Welcome Back!
+              </h1>
+              <p className="text-accent mt-1 tracking-wide">Maison Plate</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-
               {/* Email */}
               <div>
-                <label className="text-sm text-white/60 mb-2 block flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-[#d4a24c]" />
+                <label className="text-sm text-foreground/60 mb-2 block flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-accent" />
                   Email
                 </label>
                 <input
@@ -183,14 +187,14 @@ export default function LoginPage() {
                   required
                   disabled={isSubmitting}
                   placeholder="you@email.com"
-                  className="w-full h-12 rounded-lg bg-[#0b1d26] border border-white/10 px-4 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-[#d4a24c]/40"
+                  className="w-full h-12 rounded-sm bg-background border border-border px-4 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent/40"
                 />
               </div>
 
               {/* Password */}
               <div>
-                <label className="text-sm text-white/60 mb-2 block flex items-center gap-2">
-                  <Lock className="w-4 h-4 text-[#d4a24c]" />
+                <label className="text-sm text-foreground/60 mb-2 block flex items-center gap-2">
+                  <Lock className="w-4 h-4 text-accent" />
                   Password
                 </label>
 
@@ -198,17 +202,19 @@ export default function LoginPage() {
                   <input
                     type={showPassword ? "text" : "password"}
                     value={formData.password}
-                    onChange={(e) => handleInputChange("password", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("password", e.target.value)
+                    }
                     required
                     disabled={isSubmitting}
                     placeholder="Enter your password"
-                    className="w-full h-12 rounded-lg bg-[#0b1d26] border border-white/10 px-4 pr-10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-[#d4a24c]/40"
+                    className="w-full h-12 rounded-sm bg-background border border-border px-4 pr-10 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent/40"
                   />
 
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#d4a24c] hover:opacity-80"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-accent hover:opacity-80"
                   >
                     {showPassword ? (
                       <EyeOff className="w-4 h-4" />
@@ -223,16 +229,19 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-12 rounded-full bg-[#d4a24c] text-black font-semibold transition-all hover:brightness-110 disabled:opacity-50"
+                className="w-full h-12 rounded-sm bg-accent text-accent-foreground font-semibold transition-all hover:bg-accent/85 disabled:opacity-50"
               >
                 {isSubmitting ? "Logging in..." : "Login"}
               </button>
 
               {/* Footer */}
               <div className="text-center pt-2">
-                <p className="text-white/60">
+                <p className="text-foreground/60">
                   Don’t have an account?{" "}
-                  <Link href="/register" className="text-[#d4a24c] hover:underline">
+                  <Link
+                    href="/register"
+                    className="text-accent hover:underline"
+                  >
                     Register
                   </Link>
                 </p>
@@ -244,6 +253,5 @@ export default function LoginPage() {
 
       <Toaster />
     </>
-
   )
 }

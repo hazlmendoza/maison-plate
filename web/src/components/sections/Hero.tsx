@@ -3,7 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import heroImage from "@/assets/hero-dining-room.jpg"
+import heroImage from "@/assets/hero-dining-room.png"
 import { Button } from "@/components/ui/button"
 import { Playfair_Display, Great_Vibes } from "next/font/google"
 

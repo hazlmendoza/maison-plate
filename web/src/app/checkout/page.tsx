@@ -11,7 +11,16 @@ import { useCartStore } from "@/store/cartStore"
 import type { CheckoutInfo } from "@/types"
 import { useRouter } from "next/navigation"
 import { toast } from "@/hooks/use-toast"
-import { Banknote, Lock, Package, LogIn, Upload, X, Copy, Check } from "lucide-react"
+import {
+  Banknote,
+  Lock,
+  Package,
+  LogIn,
+  Upload,
+  X,
+  Copy,
+  Check,
+} from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { useSettingsStore } from "@/store/settingsStore"
@@ -32,7 +41,10 @@ interface Address {
 }
 
 const formatPrice = (price: number): string => {
-  return price.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  return price.toLocaleString("en-PH", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
 }
 
 const Checkout = () => {
@@ -164,7 +176,10 @@ const Checkout = () => {
     fetchPaymentMethods()
   }, [])
 
-  const handleInputChange = (field: keyof ExtendedCheckoutInfo, value: string) => {
+  const handleInputChange = (
+    field: keyof ExtendedCheckoutInfo,
+    value: string,
+  ) => {
     setCheckoutInfo((prev) => ({ ...prev, [field]: value }))
   }
 
@@ -223,7 +238,12 @@ const Checkout = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!checkoutInfo.name || !checkoutInfo.email || !checkoutInfo.phone || !checkoutInfo.address) {
+    if (
+      !checkoutInfo.name ||
+      !checkoutInfo.email ||
+      !checkoutInfo.phone ||
+      !checkoutInfo.address
+    ) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields.",
@@ -232,10 +252,14 @@ const Checkout = () => {
       return
     }
 
-    if (checkoutInfo.paymentMethod === "cash" && items.some((item) => item.price * item.quantity > 1000)) {
+    if (
+      checkoutInfo.paymentMethod === "cash" &&
+      items.some((item) => item.price * item.quantity > 1000)
+    ) {
       toast({
         title: "COD Not Available",
-        description: "Please use a different payment method for orders over ₱1,000.",
+        description:
+          "Please use a different payment method for orders over ₱1,000.",
         variant: "destructive",
       })
       return
@@ -297,7 +321,11 @@ const Checkout = () => {
 
       if (response.ok) {
         const orderNumber =
-          result.data?.order?.order_number || result.data?.order_number || result.order?.order_number || result.order_number || "your order"
+          result.data?.order?.order_number ||
+          result.data?.order_number ||
+          result.order?.order_number ||
+          result.order_number ||
+          "your order"
 
         clearCart()
         setIsOrderComplete(true)
@@ -311,13 +339,18 @@ const Checkout = () => {
           router.push("/orders")
         }, 1000)
       } else {
-        throw new Error(result.message || result.error || "Failed to create order")
+        throw new Error(
+          result.message || result.error || "Failed to create order",
+        )
       }
     } catch (error) {
       console.error("Error creating order:", error)
       toast({
         title: "Order Failed",
-        description: error instanceof Error ? error.message : "Failed to place order. Please try again.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to place order. Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -409,13 +442,20 @@ const Checkout = () => {
 
   if (maintenanceMode) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b1d26] text-white px-4">
-        <div className="text-center max-w-md bg-[#0f2a33] p-10 rounded-2xl border border-[#d4a24c]/30 shadow-xl">
-          <h1 className="text-2xl font-bold mb-3 text-[#d4a24c]">Maintenance Mode</h1>
+      <div className="dark min-h-screen flex items-center justify-center bg-background text-foreground px-4">
+        <div className="text-center max-w-md bg-card p-10 rounded-sm border border-accent/30 shadow-xl">
+          <h1 className="text-2xl font-bold mb-3 text-accent">
+            Maintenance Mode
+          </h1>
 
-          <p className="text-white/70 mb-6">Sorry, we are currently under maintenance. Please try again later.</p>
+          <p className="text-foreground/70 mb-6">
+            Sorry, we are currently under maintenance. Please try again later.
+          </p>
 
-          <Button onClick={() => (window.location.href = "/")} className="bg-[#d4a24c] text-black rounded-full px-6">
+          <Button
+            onClick={() => (window.location.href = "/")}
+            className="bg-accent hover:bg-accent/85 text-accent-foreground rounded-sm px-6"
+          >
             Go Back Home
           </Button>
         </div>
@@ -425,17 +465,23 @@ const Checkout = () => {
 
   if (isOrderComplete) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b1d26] text-white px-4">
-        <div className="text-center max-w-md bg-[#0f2a33] p-10 rounded-2xl border border-[#d4a24c]/30 shadow-xl">
-          <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#d4a24c] flex items-center justify-center">
-            <Check className="w-8 h-8 text-black" />
+      <div className="dark min-h-screen flex items-center justify-center bg-background text-foreground px-4">
+        <div className="text-center max-w-md bg-card p-10 rounded-sm border border-accent/30 shadow-xl">
+          <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-accent flex items-center justify-center">
+            <Check className="w-8 h-8 text-accent-foreground" />
           </div>
 
           <h1 className="text-2xl font-bold mb-3">Order Successful 🎉</h1>
 
-          <p className="text-white/70 mb-6">Your order has been placed successfully. A confirmation email has been sent to your inbox.</p>
+          <p className="text-foreground/70 mb-6">
+            Your order has been placed successfully. A confirmation email has
+            been sent to your inbox.
+          </p>
 
-          <Button asChild className="bg-[#d4a24c] text-black rounded-full px-6">
+          <Button
+            asChild
+            className="bg-accent hover:bg-accent/85 text-accent-foreground rounded-sm px-6"
+          >
             <Link href="/orders">View My Orders</Link>
           </Button>
         </div>
@@ -445,53 +491,66 @@ const Checkout = () => {
 
   if (isLoadingUser) {
     return (
-      <div className="min-h-screen py-24 bg-[#0b1d26] text-white flex items-center justify-center">
+      <div className="dark min-h-screen py-24 bg-background text-foreground flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="w-10 h-10 border-2 border-[#d4a24c] border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-white/70">Preparing checkout...</p>
-          <p className="text-xs text-white/40">Loading your account and address</p>
+          <div className="w-10 h-10 border-2 border-accent border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-foreground/70">Preparing checkout...</p>
+          <p className="text-xs text-foreground/40">
+            Loading your account and address
+          </p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen py-24 bg-[#0b1d26] text-white">
+    // `dark` forced so this page stays the same blackened-steel/copper
+    // room as the rest of the site, regardless of the theme toggle.
+    <div className="dark min-h-screen py-24 bg-background text-foreground">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-[#d4a24c]/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#d4a24c]/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#d4a24c]/20 rounded-full blur-3xl animate-pulse delay-500"></div>
+        <div className="absolute top-0 left-0 w-96 h-96 bg-accent/30 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accent/20 rounded-full blur-3xl animate-pulse delay-500"></div>
       </div>
 
       <div className="relative z-10">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-bold text-white">Checkout</h1>
+            <h1 className="text-4xl font-bold text-foreground">Checkout</h1>
             {userInfo && (
-              <div className="flex items-center gap-2 px-4 py-2 border bg-[#0b1d26]/70 backdrop-blur-sm border-white/30 hover:border-white/50 rounded-2xl overflow-hidden">
-                <span className="text-white font-medium">Welcome, {userInfo.name}!</span>
+              <div className="flex items-center gap-2 px-4 py-2 border bg-card/70 backdrop-blur-sm border-border hover:border-accent/40 rounded-sm overflow-hidden">
+                <span className="text-foreground font-medium">
+                  Welcome, {userInfo.name}!
+                </span>
               </div>
             )}
           </div>
 
           {!userInfo && (
-            <Card className="mb-8 shadow-2xl bg-[#0b1d26]/70 backdrop-blur-sm border-white/30 hover:border-white/50 rounded-2xl overflow-hidden">
+            <Card className="mb-8 shadow-2xl bg-card/70 backdrop-blur-sm border-border hover:border-accent/40 rounded-sm overflow-hidden">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">Login for faster checkout!</h3>
-                    <p className="text-white/70">Save your information for quick ordering next time.</p>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">
+                      Login for faster checkout!
+                    </h3>
+                    <p className="text-foreground/70">
+                      Save your information for quick ordering next time.
+                    </p>
                   </div>
                   <div className="flex gap-2">
                     <Link href="/login">
-                      <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 hover:border-white/50 bg-transparent">
+                      <Button
+                        variant="outline"
+                        className="rounded-sm border-border text-foreground hover:bg-foreground/10 hover:border-accent/40 bg-transparent"
+                      >
                         <LogIn className="w-4 h-4 mr-2" />
                         Login
                       </Button>
                     </Link>
                     <Link href="/register">
-                      <Button className="bg-white hover:bg-white/90 text-[#8B0000] font-bold shadow-lg">
+                      <Button className="rounded-sm bg-accent hover:bg-accent/85 text-accent-foreground font-bold shadow-lg">
                         <LogIn className="w-4 h-4 mr-2" />
                         Register
                       </Button>
@@ -503,243 +562,315 @@ const Checkout = () => {
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <Card className="shadow-2xl p-0 bg-[#0b1d26]/70 backdrop-blur-sm border-white/30 hover:border-white/50 rounded-2xl overflow-hidden">
-              <div className="border-b border-white/20 bg-[#d4a24c] text-[#0b1d26]/90 px-6 py-4">
-                <h2 className="text-2xl font-bold">Delivery & Payment Information</h2>
+            <Card className="shadow-2xl p-0 bg-card/70 backdrop-blur-sm border-border hover:border-accent/40 rounded-sm overflow-hidden">
+              <div className="border-b border-border bg-accent text-accent-foreground px-6 py-4">
+                <h2 className="text-2xl font-bold">
+                  Delivery & Payment Information
+                </h2>
               </div>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
-                    <h3 className="font-semibold text-xl text-white border-b border-white/20 pb-2">Personal Information</h3>
+                    <h3 className="font-semibold text-xl text-foreground border-b border-border pb-2">
+                      Personal Information
+                    </h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 space-y-4">
                       <div>
-                        <Label htmlFor="name" className="text-white py-2">
+                        <Label htmlFor="name" className="text-foreground py-2">
                           Full Name *
                         </Label>
                         <Input
                           id="name"
                           value={checkoutInfo.name}
-                          onChange={(e) => handleInputChange("name", e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("name", e.target.value)
+                          }
                           placeholder="Enter your full name"
                           required
-                          className="border-white/30 bg-white/20 text-white placeholder:text-white/60 focus:border-white focus:ring-white/30"
+                          className="rounded-sm border-border bg-foreground/10 text-foreground placeholder:text-foreground/50 focus:border-accent focus:ring-accent/30"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="email" className="text-white py-2">
+                        <Label htmlFor="email" className="text-foreground py-2">
                           Email Address *
                         </Label>
                         <Input
                           id="email"
                           type="email"
                           value={checkoutInfo.email}
-                          onChange={(e) => handleInputChange("email", e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("email", e.target.value)
+                          }
                           placeholder="Enter your email"
                           required
-                          className="border-white/30 bg-white/20 text-white placeholder:text-white/60 focus:border-white focus:ring-white/30"
+                          className="rounded-sm border-border bg-foreground/10 text-foreground placeholder:text-foreground/50 focus:border-accent focus:ring-accent/30"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <Label htmlFor="phone" className="text-white py-2">
+                      <Label htmlFor="phone" className="text-foreground py-2">
                         Phone Number *
                       </Label>
                       <Input
                         id="phone"
                         type="tel"
                         value={checkoutInfo.phone}
-                        onChange={(e) => handleInputChange("phone", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("phone", e.target.value)
+                        }
                         placeholder="Enter your phone number"
                         required
-                        className="border-white/30 bg-white/20 text-white placeholder:text-white/60 focus:border-white focus:ring-white/30"
+                        className="rounded-sm border-border bg-foreground/10 text-foreground placeholder:text-foreground/50 focus:border-accent focus:ring-accent/30"
                       />
                     </div>
                   </div>
 
-                  <Separator className="bg-white/20" />
+                  <Separator className="bg-border" />
 
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-xl text-white border-b border-white/20 pb-2">Delivery Address</h3>
+                    <h3 className="font-semibold text-xl text-foreground border-b border-border pb-2">
+                      Delivery Address
+                    </h3>
 
                     <div>
-                      <Label htmlFor="address" className="text-white py-2">
+                      <Label htmlFor="address" className="text-foreground py-2">
                         Street Address *
                       </Label>
                       <Input
                         id="address"
                         value={checkoutInfo.address}
-                        onChange={(e) => handleInputChange("address", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("address", e.target.value)
+                        }
                         placeholder="Enter your street address"
                         required
-                        className="border-white/30 bg-white/20 text-white placeholder:text-white/60 focus:border-white focus:ring-white/30"
+                        className="rounded-sm border-border bg-foreground/10 text-foreground placeholder:text-foreground/50 focus:border-accent focus:ring-accent/30"
                       />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="city" className="text-white py-2">
+                        <Label htmlFor="city" className="text-foreground py-2">
                           City *
                         </Label>
                         <Input
                           id="city"
                           value={checkoutInfo.city}
-                          onChange={(e) => handleInputChange("city", e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("city", e.target.value)
+                          }
                           placeholder="Enter your city"
                           required
-                          className="border-white/30 bg-white/20 text-white placeholder:text-white/60 focus:border-white focus:ring-white/30"
+                          className="rounded-sm border-border bg-foreground/10 text-foreground placeholder:text-foreground/50 focus:border-accent focus:ring-accent/30"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="zipCode" className="text-white py-2">
+                        <Label
+                          htmlFor="zipCode"
+                          className="text-foreground py-2"
+                        >
                           ZIP Code *
                         </Label>
                         <Input
                           id="zipCode"
                           value={checkoutInfo.zipCode}
-                          onChange={(e) => handleInputChange("zipCode", e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("zipCode", e.target.value)
+                          }
                           placeholder="Enter ZIP code"
                           required
-                          className="border-white/30 bg-white/20 text-white placeholder:text-white/60 focus:border-white focus:ring-white/30"
+                          className="rounded-sm border-border bg-foreground/10 text-foreground placeholder:text-foreground/50 focus:border-accent focus:ring-accent/30"
                         />
                       </div>
                     </div>
                   </div>
 
-                  <Separator className="bg-white/20" />
+                  <Separator className="bg-border" />
 
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-xl text-white border-b border-white/20 pb-2">Payment Method</h3>
+                    <h3 className="font-semibold text-xl text-foreground border-b border-border pb-2">
+                      Payment Method
+                    </h3>
 
                     {total > 1000 && (
-                      <div className="p-3 bg-[#ff6b6b]/20 border border-[#ff6b6b]/50 rounded-lg mb-3">
-                        <p className="text-sm text-white font-medium">
-                          Cash on Delivery is not available for orders above ₱1,000. Please use other payment methods.
+                      <div className="p-3 bg-destructive/15 border border-destructive/40 rounded-sm mb-3">
+                        <p className="text-sm text-foreground font-medium">
+                          Cash on Delivery is not available for orders above
+                          ₱1,000. Please use other payment methods.
                         </p>
                       </div>
                     )}
 
                     <div className="space-y-3">
                       {loadingPayments ? (
-                        <p className="text-white/60 text-sm">Loading payment methods...</p>
+                        <p className="text-foreground/60 text-sm">
+                          Loading payment methods...
+                        </p>
                       ) : paymentMethods.length === 0 ? (
-                        <p className="text-white/60 text-sm">No payment methods available</p>
+                        <p className="text-foreground/60 text-sm">
+                          No payment methods available
+                        </p>
                       ) : (
                         paymentMethods
                           .filter((m) => m.is_enabled)
                           .map((method) => (
                             <div
                               key={method.id}
-                              className={`p-4 rounded-lg border-2 transition-all cursor-pointer ${
+                              className={`p-4 rounded-sm border-2 transition-all cursor-pointer ${
                                 checkoutInfo.paymentMethod === method.key
-                                  ? "bg-white/10 border-white"
-                                  : "bg-white/5 border-white/20 hover:border-white/40"
+                                  ? "bg-accent/10 border-accent"
+                                  : "bg-foreground/5 border-border hover:border-accent/30"
                               }`}
-                              onClick={() => handleInputChange("paymentMethod", method.key as any)}
+                              onClick={() =>
+                                handleInputChange(
+                                  "paymentMethod",
+                                  method.key as any,
+                                )
+                              }
                             >
                               {/* HEADER ROW */}
                               <div className="flex items-center gap-3">
                                 <div
                                   className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                                    checkoutInfo.paymentMethod === method.key ? "border-white" : "border-white/30"
+                                    checkoutInfo.paymentMethod === method.key
+                                      ? "border-accent"
+                                      : "border-border"
                                   }`}
                                 >
-                                  {checkoutInfo.paymentMethod === method.key && <div className="w-3 h-3 rounded-full bg-white" />}
+                                  {checkoutInfo.paymentMethod ===
+                                    method.key && (
+                                    <div className="w-3 h-3 rounded-full bg-accent" />
+                                  )}
                                 </div>
 
                                 <div className="flex-1">
-                                  <p className="font-medium text-white capitalize">{method.display_name}</p>
-                                  <p className="text-sm text-white/70 capitalize">
-                                    {method.type === "cash" ? "Pay when you receive your order" : method.type}
+                                  <p className="font-medium text-foreground capitalize">
+                                    {method.display_name}
+                                  </p>
+                                  <p className="text-sm text-foreground/70 capitalize">
+                                    {method.type === "cash"
+                                      ? "Pay when you receive your order"
+                                      : method.type}
                                   </p>
                                 </div>
 
-                                {checkoutInfo.paymentMethod === method.key && <Check className="w-5 h-5 text-white" />}
+                                {checkoutInfo.paymentMethod === method.key && (
+                                  <Check className="w-5 h-5 text-accent" />
+                                )}
                               </div>
 
                               {/* DETAILS (ONLY WHEN SELECTED) */}
-                              {checkoutInfo.paymentMethod === method.key && method.type !== "cash" && (
-                                <div className="mt-3 space-y-2 text-sm text-white/80">
-                                  {method.account_name ? (
-                                    <p>
-                                      <span className="text-white/60">Name:</span> {method.account_name}
-                                    </p>
-                                  ) : method.display_name ? (
-                                    <p>
-                                      <span className="text-white/60">Name:</span> {method.display_name}
-                                    </p>
-                                  ) : null}
+                              {checkoutInfo.paymentMethod === method.key &&
+                                method.type !== "cash" && (
+                                  <div className="mt-3 space-y-2 text-sm text-foreground/80">
+                                    {method.account_name ? (
+                                      <p>
+                                        <span className="text-foreground/60">
+                                          Name:
+                                        </span>{" "}
+                                        {method.account_name}
+                                      </p>
+                                    ) : method.display_name ? (
+                                      <p>
+                                        <span className="text-foreground/60">
+                                          Name:
+                                        </span>{" "}
+                                        {method.display_name}
+                                      </p>
+                                    ) : null}
 
-                                  {method.account_number && (
-                                    <p>
-                                      <span className="text-white/60">Account Number:</span> {method.account_number}
-                                      <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() =>
-                                          copyToClipboard(
-                                            (checkoutInfo.paymentMethod = method.account_number),
-                                            (checkoutInfo.paymentMethod = method.key),
-                                          )
-                                        }
-                                        className="ml-2 border-white/30 text-white hover:bg-white/10 bg-transparent"
-                                      >
-                                        {(checkoutInfo.paymentMethod === "gcash" ? copiedGcash : copiedBank) ? (
-                                          <Check className="w-4 h-4 mr-2" />
-                                        ) : (
-                                          <Copy className="w-4 h-4 mr-2" />
+                                    {method.account_number && (
+                                      <p>
+                                        <span className="text-foreground/60">
+                                          Account Number:
+                                        </span>{" "}
+                                        {method.account_number}
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() =>
+                                            copyToClipboard(
+                                              (checkoutInfo.paymentMethod =
+                                                method.account_number),
+                                              (checkoutInfo.paymentMethod =
+                                                method.key),
+                                            )
+                                          }
+                                          className="ml-2 rounded-sm border-border text-foreground hover:bg-foreground/10 bg-transparent"
+                                        >
+                                          {(
+                                            checkoutInfo.paymentMethod ===
+                                            "gcash"
+                                              ? copiedGcash
+                                              : copiedBank
+                                          ) ? (
+                                            <Check className="w-4 h-4 mr-2" />
+                                          ) : (
+                                            <Copy className="w-4 h-4 mr-2" />
+                                          )}
+                                          Copy
+                                        </Button>
+                                      </p>
+                                    )}
+
+                                    {method.qr_code && (
+                                      <div className="mt-2 w-full">
+                                        {method.qr_code && (
+                                          <div className="mt-2 w-full">
+                                            <Image
+                                              src={`${process.env.NEXT_PUBLIC_API_URL}/${method.qr_code}`}
+                                              alt="QR Code"
+                                              width={360}
+                                              height={360}
+                                              className="rounded-sm border border-border object-cover"
+                                            />
+                                          </div>
                                         )}
-                                        Copy
-                                      </Button>
-                                    </p>
-                                  )}
+                                      </div>
+                                    )}
 
-                                  {method.qr_code && (
-                                    <div className="mt-2 w-full">
-                                      {method.qr_code && (
-                                        <div className="mt-2 w-full">
-                                          <Image
-                                            src={`${process.env.NEXT_PUBLIC_API_URL}/${method.qr_code}`}
-                                            alt="QR Code"
-                                            width={360}
-                                            height={360}
-                                            className="rounded border border-white/20 object-cover"
-                                          />
-                                        </div>
-                                      )}
-                                    </div>
-                                  )}
-
-                                  <div className="mt-4">
-                                    <Label className="text-white">Upload Receipt *</Label>
-                                    <div className="mt-2">
-                                      {receiptFile ? (
-                                        <div className="flex items-center gap-2 p-3 bg-white/10 rounded-lg border border-white/30">
-                                          <Check className="w-4 h-4 text-[#ff6b6b]" />
-                                          <span className="text-white text-sm">Receipt uploaded</span>
-                                          <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={removeReceipt}
-                                            className="ml-auto text-[#ff6b6b] hover:bg-white/10"
-                                          >
-                                            <X className="w-4 h-4" />
-                                          </Button>
-                                        </div>
-                                      ) : (
-                                        <label className="flex items-center justify-center gap-2 p-4 border-2 border-dashed border-white/30 rounded-lg cursor-pointer hover:border-white/50 transition-colors">
-                                          <Upload className="w-5 h-5 text-white/70" />
-                                          <span className="text-white/70">Click to upload receipt</span>
-                                          <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
-                                        </label>
-                                      )}
+                                    <div className="mt-4">
+                                      <Label className="text-foreground">
+                                        Upload Receipt *
+                                      </Label>
+                                      <div className="mt-2">
+                                        {receiptFile ? (
+                                          <div className="flex items-center gap-2 p-3 bg-foreground/5 rounded-sm border border-border">
+                                            <Check className="w-4 h-4 text-[var(--chart-4)]" />
+                                            <span className="text-foreground text-sm">
+                                              Receipt uploaded
+                                            </span>
+                                            <Button
+                                              type="button"
+                                              variant="ghost"
+                                              size="sm"
+                                              onClick={removeReceipt}
+                                              className="ml-auto text-destructive hover:bg-destructive/10"
+                                            >
+                                              <X className="w-4 h-4" />
+                                            </Button>
+                                          </div>
+                                        ) : (
+                                          <label className="flex items-center justify-center gap-2 p-4 border-2 border-dashed border-border rounded-sm cursor-pointer hover:border-accent/40 transition-colors">
+                                            <Upload className="w-5 h-5 text-foreground/60" />
+                                            <span className="text-foreground/60">
+                                              Click to upload receipt
+                                            </span>
+                                            <input
+                                              type="file"
+                                              accept="image/*"
+                                              onChange={handleFileUpload}
+                                              className="hidden"
+                                            />
+                                          </label>
+                                        )}
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              )}
+                                )}
                             </div>
                           ))
                       )}
@@ -749,7 +880,7 @@ const Checkout = () => {
                   <Button
                     onClick={handlePlaceOrder}
                     disabled={isProcessing}
-                    className="mb-4 w-full bg-[#d4a24c] text-black rounded-full py-5 text-lg hover:bg-[#c8953f] transition-all"
+                    className="mb-4 w-full bg-accent hover:bg-accent/85 text-accent-foreground rounded-sm py-5 text-lg transition-all"
                   >
                     {isProcessing ? "Processing..." : "Place Order"}
                   </Button>
@@ -758,8 +889,8 @@ const Checkout = () => {
             </Card>
 
             {/* Order Summary */}
-            <Card className="h-fit sticky top-24 shadow-2xl p-0 bg-[#0b1d26]/70 backdrop-blur-sm border-white/30 hover:border-white/50 rounded-2xl overflow-hidden">
-              <div className="border-b border-white/20 bg-[#d4a24c] text-[#0b1d26]/90 px-6 py-4">
+            <Card className="h-fit sticky top-24 shadow-2xl p-0 bg-card/70 backdrop-blur-sm border-border hover:border-accent/40 rounded-sm overflow-hidden">
+              <div className="border-b border-border bg-accent text-accent-foreground px-6 py-4">
                 <h2 className="text-2xl font-bold flex items-center gap-2">
                   <Package className="w-6 h-6" />
                   Order Summary
@@ -770,42 +901,57 @@ const Checkout = () => {
                   <table className="w-full text-left border-collapse">
                     {/* HEADERS */}
                     <thead>
-                      <tr className="border-b border-white/10 text-white/70 text-sm">
+                      <tr className="border-b border-border text-foreground/70 text-sm">
                         <th className="py-3 font-medium">Product</th>
                         <th className="py-3 font-medium text-center">Qty</th>
-                        <th className="py-3 font-medium text-right">Subtotal</th>
+                        <th className="py-3 font-medium text-right">
+                          Subtotal
+                        </th>
                       </tr>
                     </thead>
 
                     {/* BODY */}
                     <tbody>
                       {items.map((item) => (
-                        <tr key={item.id} className="border-b border-white/10 hover:bg-white/5 transition">
+                        <tr
+                          key={item.id}
+                          className="border-b border-border hover:bg-foreground/5 transition"
+                        >
                           {/* PRODUCT NAME */}
-                          <td className="py-3 text-white font-medium">
-                            <div className="max-w-[220px] truncate">{item.name}</div>
+                          <td className="py-3 text-foreground font-medium">
+                            <div className="max-w-[220px] truncate">
+                              {item.name}
+                            </div>
                           </td>
 
                           {/* QUANTITY */}
-                          <td className="py-3 text-white/70 text-center">{item.quantity}</td>
+                          <td className="py-3 text-foreground/70 text-center">
+                            {item.quantity}
+                          </td>
 
                           {/* SUBTOTAL */}
-                          <td className="py-3 text-white text-right font-medium">₱{formatPrice(Number(item.price) * item.quantity)}</td>
+                          <td className="py-3 text-foreground text-right font-medium">
+                            ₱{formatPrice(Number(item.price) * item.quantity)}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
 
-                <Separator className="bg-white/20" />
+                <Separator className="bg-border" />
                 <div className="flex justify-between font-bold text-lg pt-6">
-                  <span className="text-white">Delivery Fee</span>
-                  <span className="text-white">₱{formatPrice(deliveryFee)}</span>
+                  <span className="text-foreground">Delivery Fee</span>
+                  <span className="text-foreground">
+                    ₱{formatPrice(deliveryFee)}
+                  </span>
                 </div>
 
                 <div className="flex justify-between font-bold text-lg pb-6">
-                  <span className="text-white">Total</span>
-                  <span className="text-white">₱{formatPrice(total + deliveryFee)}</span>
+                  <span className="text-foreground">Total</span>
+                  <span className="text-foreground">
+                    ₱{formatPrice(total + deliveryFee)}
+                  </span>
                 </div>
               </CardContent>
             </Card>
