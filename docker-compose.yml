@@ -1,0 +1,58 @@
+services:
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: maison_plate_api
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./api:/var/www
+    depends_on:
+      - db
+    networks:
+      - maison_plate
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: maison_plate_web
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      WATCHPACK_POLLING: "true"
+    depends_on:
+      - api
+    networks:
+      - maison_plate
+
+  db:
+    image: mysql:8.0
+    container_name: maison_plate_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - maison_plate
+
+networks:
+  maison_plate:
+
+volumes:
+  mysql_data:
