@@ -109,21 +109,6 @@ export default function Announcements() {
                 </motion.div>
               ))}
             </div>
-
-            {/* View All Button */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="text-center mt-10"
-            >
-              <Link
-                href="/announcements"
-                className="inline-block rounded-sm border border-accent px-8 py-3 font-medium text-foreground transition hover:bg-accent hover:text-accent-foreground"
-              >
-                View All
-              </Link>
-            </motion.div>
           </>
         )}
 

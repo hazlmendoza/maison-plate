@@ -216,7 +216,6 @@ export default function Contact() {
                     <option value="">Select an option</option>
                     <option value="general">General Inquiry</option>
                     <option value="reservation">Reservation</option>
-                    <option value="complaint">Complaint</option>
                     <option value="suggestion">Suggestion</option>
                   </select>
                 </div>
