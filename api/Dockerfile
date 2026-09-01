@@ -2,7 +2,6 @@ FROM php:8.4-fpm
 
 WORKDIR /var/www
 
-# System dependencies
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -28,25 +27,23 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Install PHP dependencies first for Docker cache
-COPY composer.json composer.lock ./
+# Copy Laravel application FIRST
+COPY . .
 
+# Install Composer dependencies
 RUN composer install \
     --no-interaction \
     --prefer-dist \
-    --optimize-autoloader
-
-# Copy Laravel application
-COPY . .
+    --optimize-autoloader \
+    --no-dev
 
 # Laravel permissions
 RUN chown -R www-data:www-data \
     storage \
     bootstrap/cache
 
-EXPOSE 9000
+EXPOSE 8000
 
-CMD ["php-fpm"]
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
