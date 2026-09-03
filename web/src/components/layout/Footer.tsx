@@ -107,9 +107,6 @@ const Footer = () => {
           <p>
             © {new Date().getFullYear()} Maison Plate. All rights reserved.
           </p>
-          <p>
-            Powered by Infinitech Advertising Corporation
-          </p>
         </div>
       </div>
     </footer>
